@@ -67,6 +67,92 @@
     background-color: #e6b800 !important;
 }
 
+/* Kortin pääsäiliö */
+.pizza-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 2rem;
+    max-width: 300px;
+    margin: 50px auto;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.pizza-card:hover {
+    transform: translateY(-5px);
+}
+
+.pizza-card img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+}
+
+.quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.quantity-controls button {
+    background-color: #1a1a1a;
+    color: #ffcc00;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.quantity-controls button:hover {
+    background-color: #333;
+}
+
+.quantity-controls input {
+    width: 60px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    outline: none;
+}
+
+.order-btn {
+    display: block;
+    width: 100%;
+    background: #ffcc00;
+    color: #000;
+    border: none;
+    padding: 12px;
+    margin-top: 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.order-btn:hover {
+    background: #e6b800;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+  
 /* Puhelinta varten! */
 @media screen and (max-width: 768px) {
     .navbar {
