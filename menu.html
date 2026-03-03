@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
     <nav class="navbar">
         <div class="logo">
             <a href="index.html">Pizza<span>Nyt</span></a>
@@ -17,31 +16,42 @@
             <li><a href="menu.html" class="selected">Ruokalista</a></li>
             <li><a href="contact.html">Ota yhteyttä</a></li>
             <li class="login-btn"><a href="login.html">Kirjaudu</a></li>
+            <li class="cart-container">
+                <a class="cart-link">
+                    <div class="cart-wrapper">
+                        <img src="images/cart.png" alt="Ostoskori" class="cart-icon">
+                        <span class="cart-quantity" id="cart-count">0</span>
+                    </div>
+                </a>
+            </li>
+            
         </ul>
     </nav>
-    <div class="pizza-card">
-        <h3>Klassikko Margherita</h3>
-        <img src="pizzas/Margherita.png">
-        <div class="quantity-controls">
-            <button class="decrease">−</button>
-            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-            <button class="increase">+</button>
+
+    <main class="menu-container">
+        <div class="pizza-card">
+            <h3>Klassikko Margherita</h3>
+            <img src="pizzas/Margherita.png" alt="Margherita">
+            <div class="quantity-controls">
+                <button class="decrease">−</button>
+                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                <button class="increase">+</button>
+            </div>
+            <button class="order-btn">Lisää ostoskoriin</button>
         </div>
-        <button class="order-btn">Lisää ostoskoriin</button>
-    </div>
-    
-    <div class="pizza-card">
-        <h3>Klassikko Pepperoni</h3>
-        <img src="pizzas/Pepperoni.png">
-        <div class="quantity-controls">
-            <button class="decrease">−</button>
-            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-            <button class="increase">+</button>
+
+        <div class="pizza-card">
+            <h3>Klassikko Pepperoni</h3>
+            <img src="pizzas/Pepperoni.png" alt="Pepperoni">
+            <div class="quantity-controls">
+                <button class="decrease">−</button>
+                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                <button class="increase">+</button>
+            </div>
+            <button class="order-btn">Lisää ostoskoriin</button>
         </div>
-        <button class="order-btn">Lisää ostoskoriin</button>
-    </div>
-    
+    </main>
+
     <script src="script.js"></script>
 </body>
 </html>
-
