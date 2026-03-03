@@ -152,6 +152,35 @@ input::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+.about {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 60px 15%;
+}
+.about-text {
+    width: 50%;
+    margin-top: 80px;
+}
+.about-text h1 {
+font-size: 42px;
+margin-bottom: 30px;
+}
+.about-text p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+.about-image {
+    width: 45%;
+    
+}
+.about-image img {
+    width: 100%;
+    border-radius: 20%;
+}
+
+
   
 /* Puhelinta varten! */
 @media screen and (max-width: 768px) {
