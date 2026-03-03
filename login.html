@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Nyt - Käyttäjä</title>
+    <link rel="icon" type="image/x-icon" href="/images/WebsiteLogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/Logo.png" alt="PizzaNyt" class="logo-img">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Koti</a></li>
+            <li><a href="menu.html">Ruokalista</a></li>
+            <li><a href="contact.html">Ota yhteyttä</a></li>
+            <li class="login-btn" id="nav-login-li"><a href="login.html" class="selected">Kirjaudu</a></li>
+            <li id="nav-user-info" style="display:none;">
+                <span id="nav-username" class="nav-username"></span>
+                <button id="nav-logout-btn" class="nav-logout-btn">Kirjaudu ulos</button>
+            </li>
+            <li class="cart-container">
+                <a class="cart-link" href="#">
+                    <div class="cart-wrapper">
+                        <img src="images/cart.png" alt="Ostoskori" class="cart-icon">
+                        <span class="cart-quantity" id="cart-count">0</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="auth-hero">
+        <div class="auth-hero-content">
+            <span class="menu-label">Tiliisi</span>
+            <h1>Kirjaudu <span>sisään</span></h1>
+            <p>Kirjaudu sisään tai luo tili alle.</p>
+        </div>
+        <div class="menu-hero-divider"></div>
+    </section>
+
+    <main class="auth-container">
+
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Kirjaudu sisään</button>
+            <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Luo tili</button>
+        </div>
+
+        <!-- kirjautumislomake -->
+        <div class="auth-card" id="form-login">
+            <h2>Tervetuloa takaisin</h2>
+            <p class="auth-subtitle">Kirjaudu sisään olemassa olevalle tilillesi</p>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label for="login-username">Nimimerkki</label>
+                    <input type="text" id="login-username" placeholder="Kirjoita nimimerkkisi" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Salasana</label>
+                    <div class="password-wrap">
+                        <input type="password" id="login-password" placeholder="Kirjoita salasanasi" autocomplete="current-password">
+                        <button type="button" class="toggle-pw" onclick="togglePassword('login-password', this)">Näytä</button>
+                    </div>
+                </div>
+                <div class="auth-error" id="login-error"></div>
+                <button class="auth-submit-btn" onclick="handleLogin()">Kirjaudu sisään</button>
+                <p class="auth-switch">Ei tiliä vielä? <a href="#" onclick="switchTab('register'); return false;">Luo tili tästä</a></p>
+            </div>
+        </div>
+
+        <!-- rekisteröintilomake -->
+        <div class="auth-card" id="form-register" style="display:none;">
+            <h2>Luo uusi tili</h2>
+            <p class="auth-subtitle">Rekisteröidy ja tilaa pizzaa helposti</p>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label for="reg-username">Nimimerkki</label>
+                    <input type="text" id="reg-username" placeholder="Valitse nimimerkki" autocomplete="username">
+                    <span class="form-hint">Vähintään 3 merkkiä</span>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Salasana</label>
+                    <div class="password-wrap">
+                        <input type="password" id="reg-password" placeholder="Luo salasana" autocomplete="new-password">
+                        <button type="button" class="toggle-pw" onclick="togglePassword('reg-password', this)">Näytä</button>
+                    </div>
+                    <span class="form-hint">Vähintään 6 merkkiä</span>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password2">Vahvista salasana</label>
+                    <div class="password-wrap">
+                        <input type="password" id="reg-password2" placeholder="Toista salasana" autocomplete="new-password">
+                        <button type="button" class="toggle-pw" onclick="togglePassword('reg-password2', this)">Näytä</button>
+                    </div>
+                </div>
+                <div class="auth-error" id="reg-error"></div>
+                <div class="auth-success" id="reg-success"></div>
+                <button class="auth-submit-btn" onclick="createAccount()">Luo tili ja kirjaudu</button>
+                <p class="auth-switch">Onko sinulla jo tili? <a href="#" onclick="switchTab('login'); return false;">Kirjaudu tästä</a></p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <img src="images/Logo.png" alt="PizzaNyt" class="footer-logo">
+            <p>© 2026 Pizza Nyt.</p>
+            <div class="footer-links">
+                <a href="index.html">Koti</a>
+                <a href="menu.html">Ruokalista</a>
+                <a href="contact.html">Ota yhteyttä</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="script.js"></script>
+    <script>
+        // Haetaan paluusivu(se sivu mistä käyttäjä tuli)
+        // Jos ei löydy tallennettua sivua, palataan pääsivulle
+        function getReturnPage() {
+            const saved = localStorage.getItem('pizzanyt_paluusivu');
+            localStorage.removeItem('pizzanyt_paluusivu');
+            // Varmistetaan että paluusivu ei ole login.html itse
+            if (saved && !saved.includes('login.html')) {
+                return saved;
+            }
+            return 'index.html';
+        }
+
+        // Vaihdetaan välilehteä kirjautumisen ja rekisteröitymisen välillä
+        function switchTab(tab) {
+            document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
+            document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            // Tyhjennetään virheviestit välilehden vaihtuessa
+            document.getElementById('login-error').textContent = '';
+            document.getElementById('reg-error').textContent   = '';
+            document.getElementById('reg-success').textContent = '';
+        }
+
+        // Näytä tai piilota salasana
+        function togglePassword(fieldId, btn) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type      = 'text';
+                btn.textContent = 'Piilota';
+            } else {
+                field.type      = 'password';
+                btn.textContent = 'Näytä';
+            }
+        }
+
+        // Kirjautuminen olemassa olevalla tilillä
+        function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const error    = document.getElementById('login-error');
+            error.textContent = '';
+
+            if (!username || !password) {
+                error.textContent = 'Täytä kaikki kentät.';
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('pizzanyt_users') || '[]');
+            const match = users.find(u => u.name === username && u.password === password);
+
+            if (!match) {
+                error.textContent = 'Väärä nimimerkki tai salasana.';
+                return;
+            }
+
+            // Yhdistetään mahdollinen vieraskori käyttäjän koriin
+            const guestCart   = JSON.parse(localStorage.getItem('pizzanyt_cart')   || '{}');
+            const guestPrices = JSON.parse(localStorage.getItem('pizzanyt_prices') || '{}');
+            const userCart    = JSON.parse(localStorage.getItem('pizzanyt_cart_'   + username) || '{}');
+            const userPrices  = JSON.parse(localStorage.getItem('pizzanyt_prices_' + username) || '{}');
+            // Yhdistetään vieraskorin tuotteet käyttäjän koriin
+            Object.entries(guestCart).forEach(([k, v]) => { userCart[k] = (userCart[k] || 0) + v; });
+            Object.assign(userPrices, guestPrices);
+            localStorage.setItem('pizzanyt_cart_'   + username, JSON.stringify(userCart));
+            localStorage.setItem('pizzanyt_prices_' + username, JSON.stringify(userPrices));
+            // Asetetaan aktiivinen kori kirjautuneen käyttäjän koriksi ja tyhjennetään vieraskori
+            localStorage.setItem('pizzanyt_cart',   JSON.stringify(userCart));
+            localStorage.setItem('pizzanyt_prices', JSON.stringify(userPrices));
+            localStorage.setItem('pizzanyt_loggedin', username);
+            window.location.href = getReturnPage();
+        }
+
+        // Uuden tilin luominen automaattinen kirjautuminen sisään rekisteröinnin jälkeen
+        function createAccount() {
+            const username  = document.getElementById('reg-username').value.trim();
+            const password  = document.getElementById('reg-password').value;
+            const password2 = document.getElementById('reg-password2').value;
+            const error     = document.getElementById('reg-error');
+            const success   = document.getElementById('reg-success');
+            error.textContent   = '';
+            success.textContent = '';
+
+            // Tarkistetaan syöte jos se täytää kaikki ehdot
+            if (!username || !password || !password2) {
+                error.textContent = 'Täytä kaikki kentät.';
+                return;
+            }
+            if (username.length < 3) {
+                error.textContent = 'Nimimerkin tulee olla vähintään 3 merkkiä.';
+                return;
+            }
+            if (password.length < 6) {
+                error.textContent = 'Salasanan tulee olla vähintään 6 merkkiä.';
+                return;
+            }
+            if (password !== password2) {
+                error.textContent = 'Salasanat eivät täsmää.';
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('pizzanyt_users') || '[]');
+            if (users.find(u => u.name === username)) {
+                error.textContent = 'Nimimerkki on jo käytössä.';
+                return;
+            }
+
+            // Tallennetaan uusi käyttäjä
+            users.push({ name: username, password: password });
+            localStorage.setItem('pizzanyt_users', JSON.stringify(users));
+
+            // Uusi tili saa tilittömän sisällön omakseen
+            const guestCart   = JSON.parse(localStorage.getItem('pizzanyt_cart')   || '{}');
+            const guestPrices = JSON.parse(localStorage.getItem('pizzanyt_prices') || '{}');
+            localStorage.setItem('pizzanyt_cart_'   + username, JSON.stringify(guestCart));
+            localStorage.setItem('pizzanyt_prices_' + username, JSON.stringify(guestPrices));
+
+            // Kirjataan automaattisesti sisään ja palataan heti edelliselle sivulle
+            localStorage.setItem('pizzanyt_loggedin', username);
+            success.textContent = 'Tili luotu! Kirjaudutaan sisään...';
+            setTimeout(() => window.location.href = getReturnPage(), 300);
+        }
+
+        // Enter lähettää lomakkeen tai jotain
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Enter') return;
+            const loginVisible = document.getElementById('form-login').style.display !== 'none';
+            if (loginVisible) handleLogin(); else createAccount();
+        });
+    </script>
+</body>
+</html>

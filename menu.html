@@ -5,95 +5,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizza Nyt - Ruokalista</title>
     <link rel="icon" type="image/x-icon" href="/images/WebsiteLogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
     <nav class="navbar">
         <div class="logo">
-            <a href="index.html">Pizza<span>Nyt</span></a>
+            <a href="index.html">
+                <img src="images/Logo.png" alt="PizzaNyt" class="logo-img">
+            </a>
         </div>
         <ul class="nav-links">
             <li><a href="index.html">Koti</a></li>
             <li><a href="menu.html" class="selected">Ruokalista</a></li>
             <li><a href="contact.html">Ota yhteyttä</a></li>
-            <li class="login-btn"><a href="login.html">Kirjaudu</a></li>
+            <li class="login-btn" id="nav-login-li"><a href="login.html">Kirjaudu</a></li>
+            <li id="nav-user-info" style="display:none;">
+                <span id="nav-username" class="nav-username"></span>
+                <button id="nav-logout-btn" class="nav-logout-btn">Kirjaudu ulos</button>
+            </li>
             <li class="cart-container">
-                <a class="cart-link">
+                <a class="cart-link" href="#">
                     <div class="cart-wrapper">
                         <img src="images/cart.png" alt="Ostoskori" class="cart-icon">
                         <span class="cart-quantity" id="cart-count">0</span>
                     </div>
                 </a>
             </li>
-            
         </ul>
     </nav>
 
+    <section class="menu-hero">
+        <div class="menu-hero-content">
+            <span class="menu-label">Keravan paras pizza</span>
+            <h1>Ruoka<span>lista</span></h1>
+            <p>Käsintehdyt pizzat parhaista raaka-aineista, suoraan uunista sinulle.</p>
+        </div>
+        <div class="menu-hero-divider"></div>
+    </section>
+
     <main class="menu-container">
-        <div class="pizza-card">
-            <h3>BBQ-kanapizza Pizza</h3>
-            <img src="pizzas/ChickenBBQ.png" alt="BBQ-kanapizza">
-            <div class="quantity-controls">
-                <button class="decrease">−</button>
-                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-                <button class="increase">+</button>
-            </div>
-            <button class="order-btn">Lisää ostoskoriin</button>
+        <div class="section-header">
+            <h2>Pizzamme</h2>
+            <div class="section-line"></div>
         </div>
 
-        <div class="pizza-card">
-            <h3>Klassikko Pepperoni Pizza</h3>
-            <img src="pizzas/Pepperoni.png" alt="Pepperoni pizza">
-            <div class="quantity-controls">
-                <button class="decrease">−</button>
-                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-                <button class="increase">+</button>
+        <div class="pizza-grid">
+
+            <div class="pizza-card">
+                <div class="pizza-img-wrap">
+                    <img src="pizzas/ChickenBBQ.png" alt="BBQ-kanapizza">
+                </div>
+                <div class="pizza-info">
+                    <h3>BBQ-kanapizza</h3>
+                    <p class="pizza-desc">Savuinen BBQ-kastike, mehukas kana, punasipuli ja mozzarella.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">14,90 €</span>
+                        <div class="quantity-controls">
+                            <button class="decrease">&#8722;</button>
+                            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                            <button class="increase">+</button>
+                        </div>
+                    </div>
+                    <button class="order-btn">Lisää koriin</button>
+                </div>
             </div>
-            <button class="order-btn">Lisää ostoskoriin</button>
-        </div>
 
-        <div class="pizza-card">
-            <h3>Kinkku-ananas Pizza</h3>
-            <img src="pizzas/Hawaiian.png" alt="Kinkku-ananas pizza">
-            <div class="quantity-controls">
-                <button class="decrease">−</button>
-                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-                <button class="increase">+</button>
+            <div class="pizza-card">
+                <div class="pizza-img-wrap">
+                    <img src="pizzas/Pepperoni.png" alt="Pepperoni pizza">
+                </div>
+                <div class="pizza-info">
+                    <h3>Klassikko Pepperoni</h3>
+                    <p class="pizza-desc">Runsas pepperoni, tomaattikastike ja sulatettu mozzarella.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">13,90 €</span>
+                        <div class="quantity-controls">
+                            <button class="decrease">&#8722;</button>
+                            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                            <button class="increase">+</button>
+                        </div>
+                    </div>
+                    <button class="order-btn">Lisää koriin</button>
+                </div>
             </div>
-            <button class="order-btn">Lisää ostoskoriin</button>
-        </div>
 
-        <div class="pizza-card">
-            <h3>Meat Lovers Pizza</h3>
-            <img src="pizzas/MeatLovers.png" alt="Meat lovers pizza">
-            <div class="quantity-controls">
-                <button class="decrease">−</button>
-                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-                <button class="increase">+</button>
+            <div class="pizza-card">
+                <div class="pizza-img-wrap">
+                    <img src="pizzas/Hawaiian.png" alt="Kinkku-ananas pizza">
+                </div>
+                <div class="pizza-info">
+                    <h3>Kinkku-ananas</h3>
+                    <p class="pizza-desc">Makea ananas, savukinkku ja kermainen juustokate.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">13,50 €</span>
+                        <div class="quantity-controls">
+                            <button class="decrease">&#8722;</button>
+                            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                            <button class="increase">+</button>
+                        </div>
+                    </div>
+                    <button class="order-btn">Lisää koriin</button>
+                </div>
             </div>
-            <button class="order-btn">Lisää ostoskoriin</button>
-        </div>
 
-        <div class="pizza-card">
-            <h3>Vege Pizza</h3>
-            <img src="pizzas/Veggie.png" alt="Vege pizza">
-            <div class="quantity-controls">
-                <button class="decrease">−</button>
-                <input type="number" class="pizza-quantity" min="1" max="99" value="1">
-                <button class="increase">+</button>
+            <div class="pizza-card">
+                <div class="pizza-img-wrap">
+                    <img src="pizzas/MeatLovers.png" alt="Meat lovers pizza">
+                </div>
+                <div class="pizza-info">
+                    <h3>Meat Lovers</h3>
+                    <p class="pizza-desc">Pepperoni, chorizo, jauheliha ja pekoni — lihanystävälle.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">15,90 €</span>
+                        <div class="quantity-controls">
+                            <button class="decrease">&#8722;</button>
+                            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                            <button class="increase">+</button>
+                        </div>
+                    </div>
+                    <button class="order-btn">Lisää koriin</button>
+                </div>
             </div>
-            <button class="order-btn">Lisää ostoskoriin</button>
+
+            <div class="pizza-card">
+                <div class="pizza-img-wrap">
+                    <img src="pizzas/Veggie.png" alt="Vege pizza">
+                </div>
+                <div class="pizza-info">
+                    <h3>Vege Pizza</h3>
+                    <p class="pizza-desc">Sesongin kasvikset, pesto, vuohenjuusto ja aurinkokuivattu tomaatti.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">12,90 €</span>
+                        <div class="quantity-controls">
+                            <button class="decrease">&#8722;</button>
+                            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                            <button class="increase">+</button>
+                        </div>
+                    </div>
+                    <button class="order-btn">Lisää koriin</button>
+                </div>
+            </div>
+
+            <div class="pizza-card">
+                <div class="pizza-img-wrap">
+                    <img src="pizzas/DeepDish.png" alt="Chicago Deep Dish">
+                </div>
+                <div class="pizza-info">
+                    <h3>Chicago Deep Dish</h3>
+                    <p class="pizza-desc">Paksu chicagolainen pohjapizza, runsas tomaattikastike ja sulatettu juusto kerroksittain.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">16,90 €</span>
+                        <div class="quantity-controls">
+                            <button class="decrease">&#8722;</button>
+                            <input type="number" class="pizza-quantity" min="1" max="99" value="1">
+                            <button class="increase">+</button>
+                        </div>
+                    </div>
+                    <button class="order-btn">Lisää koriin</button>
+                </div>
+            </div>
+
+            <div class="pizza-card pizza-card--custom">
+                <div class="pizza-badge pizza-badge--custom">Oma luomus</div>
+                <div class="pizza-img-wrap pizza-img-wrap--custom">
+                    <div class="custom-pizza-icon">+</div>
+                </div>
+                <div class="pizza-info">
+                    <h3>Fantasia Pizza</h3>
+                    <p class="pizza-desc">Rakenna oma pizzasi valitsemalla juuri sinulle sopivat täytteet ja kastike.</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">Alk. 11,90 €</span>
+                    </div>
+                    <a href="pizzacreation.html" class="order-btn order-btn--custom">Muokkaa pizzaasi</a>
+                </div>
+            </div>
+
         </div>
-
-
-
-
-
-
-
-
     </main>
 
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <img src="images/Logo.png" alt="PizzaNyt" class="footer-logo">
+            <p>© 2026 Pizza Nyt.</p>
+            <div class="footer-links">
+                <a href="index.html">Koti</a>
+                <a href="menu.html">Ruokalista</a>
+                <a href="contact.html">Ota yhteyttä</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,241 +1,488 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root {
+    --black:    #111111;
+    --dark:     #1a1a1a;
+    --gold:     #ffcc00;
+    --gold-dim: #e6b800;
+    --white:    #f5f5f5;
+    --muted:    #888;
+    --radius:   14px;
+    --shadow:   0 20px 50px rgba(0,0,0,0.18);
 }
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark); min-height: 100vh; }
+
+/*navigaatio*/
 .navbar {
     display: flex;
     position: sticky;
-    top: 0; 
+    top: 0;
     justify-content: space-between;
     align-items: center;
-    background-color: #1a1a1a;
-    padding: 0rem 2rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    background-color: var(--black);
+    padding: 0 2.5rem;
+    height: 70px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     z-index: 1000;
 }
-
-.logo a {
-    color: #fff;
+.logo-img { height: 52px; width: 52px; object-fit: contain; display: block; border-radius: 25px; }
+.nav-links { display: flex; list-style: none; align-items: center; gap: 0.25rem; }
+.nav-links li a {
+    color: #ccc;
     text-decoration: none;
-    font-size: 1.5rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    transition: color 0.25s, background 0.25s;
+    font-size: 0.92rem;
+    font-weight: 600;
 }
+.nav-links li a:hover { color: var(--gold); background: rgba(255,204,0,0.08); }
+.nav-links li a.selected { color: var(--gold); background: rgba(255,204,0,0.12); border-bottom: 2px solid var(--gold); font-weight: 800; }
+.login-btn a { background-color: var(--gold) !important; color: #000 !important; border-radius: 8px; font-weight: 800; padding: 0.55rem 1.2rem; transition: background 0.25s !important; }
+.login-btn a:hover { background-color: var(--gold-dim) !important; }
 
-.logo span {
-    color: #ffcc00;
-}
-
-.cart-container {
-    margin-left: 1rem;
-    position: relative;
-    display: flex;
+/* navigaatio kun on kirjautunut. Ei display-arvoa tässä koska script.js hallitsee näkyvyyttä*/
+.nav-user-info {
     align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    max-width: 260px;
+}
+.nav-username {
+    color: var(--gold);
+    font-weight: 800;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    margin-right: 10px;
+    padding: 0.45rem 0.75rem;
+    background: rgba(255,204,0,0.1);
+    border: 1px solid rgba(255,204,0,0.25);
+    border-radius: 8px;
 }
 
-.cart-wrapper {
-    position: relative;
-    display: inline-block;
+.nav-logout-btn {
+    background-color: var(--gold);
+    color: #000;
+    border: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    flex-shrink: 0;
 }
+.nav-logout-btn:hover { background-color: var(--gold-dim); }
 
-.cart-icon {
-    width: 45px;
-    height: auto;
-    background-color: #ffcc00;
-    padding: 8px;
-    border-radius: 12px;
-    display: block;
-    transition: transform 0.2s ease;
-}
-
+/* ostoskori */
+.cart-container { margin-left: 0.5rem; }
+.cart-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+.cart-icon { width: 40px; height: 40px; background-color: var(--gold); padding: 8px; border-radius: 10px; object-fit: contain; display: block; transition: background 0.25s, transform 0.25s; }
+.cart-link:hover .cart-icon { background-color: var(--gold-dim); transform: scale(1.08); }
 .cart-quantity {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ffffff;
-    color: #000000;
-    font-size: 0.8rem;
-    font-weight: bold;
-    min-width: 22px;
-    height: 22px;
+    top: -7px; right: -7px;
+    background: #fff; color: #000;
+    font-size: 0.72rem; font-weight: 900;
+    min-width: 20px; height: 20px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #1a1a1a;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--black);
     z-index: 2;
 }
 
-.cart-link:hover .cart-icon {
-    background-color: #e6b800;
-    transform: scale(1.05);
+/* Sloganii varte (Keravan paras pizza) */
+.menu-hero {
+    background: var(--dark);
+    color: var(--white);
+    padding: 5rem 2.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+}
+.menu-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(255,204,0,0.07) 0%, transparent 70%);
+    pointer-events: none;
+}
+.menu-hero-content { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+.menu-label {
+    display: inline-block;
+    background: rgba(255,204,0,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(255,204,0,0.3);
+    border-radius: 100px;
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.35rem 1rem; margin-bottom: 1.2rem;
+}
+.menu-hero-content h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    line-height: 1; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 1rem;
+}
+.menu-hero-content h1 span { color: var(--gold); }
+.menu-hero-content p { font-size: 1.05rem; color: #aaa; max-width: 480px; font-weight: 600; line-height: 1.6; }
+.menu-hero-divider {
+    position: absolute; bottom: -1px; left: 0;
+    width: 100%; height: 50px;
+    background: #f8f7f4;
+    clip-path: ellipse(55% 100% at 50% 100%);
 }
 
-.nav-links {
-    display: flex;
-    list-style: none;
-    align-items: center;
-}
+/* Ruokalista taulukko pizza kortteja varten */
+.menu-container { max-width: 1260px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+.section-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; }
+.section-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 1.5px; white-space: nowrap; }
+.section-line { flex: 1; height: 2px; background: linear-gradient(90deg, #ddd 0%, transparent 100%); border-radius: 2px; }
 
-.nav-links li a {
-    color: #f4f4f4;
-    text-decoration: none;
-    padding: 1rem 1.5rem;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    font-size: 0.95rem;
+.pizza-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
 }
-
-.nav-links li a.selected {
-    color: #ffcc00;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-bottom: 2px dashed #ffcc00;
-    font-weight: bold;
-}
-
-.nav-links li a:hover {
-    color: #ffcc00;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.login-btn a {
-    background-color: #ffcc00;
-    color: #000 !important;
-    border-radius: 5px;
-    margin-left: 10px;
-    font-weight: bold;
-}
-
-.login-btn a:hover {
-    background-color: #e6b800 !important;
-}
+.pizza-card:last-child { grid-column: 2; }
 
 .pizza-card {
     background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    padding: 2rem;
-    max-width: 300px;
-    margin: 50px auto;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.pizza-card:hover {
-    transform: translateY(-5px);
-}
-
-.pizza-card img {
-    width: 200px;
-    height: auto;
-    margin-bottom: 1.5rem;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-}
-
-.quantity-controls {
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    overflow: visible;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 1rem;
+    flex-direction: column;
+    animation: fadeUp 0.5s ease both;
 }
+.pizza-card:hover { transform: translateY(-6px); box-shadow: 0 18px 48px rgba(0,0,0,0.13); }
+.pizza-card:nth-child(1) { animation-delay: 0.05s; }
+.pizza-card:nth-child(2) { animation-delay: 0.10s; }
+.pizza-card:nth-child(3) { animation-delay: 0.15s; }
+.pizza-card:nth-child(4) { animation-delay: 0.20s; }
+.pizza-card:nth-child(5) { animation-delay: 0.25s; }
+.pizza-card:nth-child(6) { animation-delay: 0.30s; }
+.pizza-card:nth-child(7) { animation-delay: 0.35s; }
 
-.quantity-controls button {
-    background-color: #1a1a1a;
-    color: #ffcc00;
-    border: none;
-    width: 40px;
-    height: 40px;
+.pizza-badge {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--gold); color: #000;
+    font-size: 0.7rem; font-weight: 900; letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem; border-radius: 100px;
+    z-index: 3;
+}
+.pizza-badge--custom { background: var(--dark); color: var(--gold); }
+
+.pizza-img-wrap {
+    background: linear-gradient(135deg, #f9f3e8 0%, #fdf6e3 100%);
+    border-radius: var(--radius) var(--radius) 0 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1.5rem 1.5rem;
+    overflow: hidden;
+}
+.pizza-img-wrap img {
+    width: 170px; height: 170px;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.18));
+}
+.pizza-card:hover .pizza-img-wrap img { transform: scale(1.06) rotate(-2deg); }
+
+.pizza-img-wrap--custom { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); min-height: 210px; }
+.custom-pizza-icon {
+    width: 90px; height: 90px;
+    border: 3px dashed rgba(255,204,0,0.4);
     border-radius: 50%;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.8rem; color: var(--gold); font-weight: 300;
+    transition: border-color 0.3s;
+}
+.pizza-card--custom:hover .custom-pizza-icon { border-color: var(--gold); }
+
+.pizza-info { padding: 1.4rem; display: flex; flex-direction: column; flex: 1; }
+.pizza-info h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 1px; color: var(--dark); margin-bottom: 0.4rem; }
+.pizza-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.55; margin-bottom: 1.2rem; flex: 1; }
+.pizza-footer { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.pizza-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--dark); }
+
+.quantity-controls { display: flex; align-items: center; gap: 6px; }
+.quantity-controls button {
+    background: var(--dark); color: var(--gold);
+    border: none; padding: 0;
+    width: 30px; height: 30px; border-radius: 50%;
+    font-size: 1.1rem; font-weight: bold; cursor: pointer;
     transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
 }
-
-.quantity-controls button:hover {
-    background-color: #333;
-}
-
+.quantity-controls button:hover { background: #333; }
 .quantity-controls input {
-    width: 60px;
-    border: 2px solid #eee;
-    border-radius: 8px;
-    padding: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    outline: none;
+    width: 46px; border: 2px solid #eee; border-radius: 8px;
+    padding: 5px; font-size: 0.95rem; font-weight: 800;
+    text-align: center; outline: none; font-family: 'Nunito', sans-serif;
+    transition: border-color 0.2s;
 }
+.quantity-controls input:focus { border-color: var(--gold); }
 
 .order-btn {
-    display: block;
+    display: flex; align-items: center; justify-content: center;
     width: 100%;
-    background: #ffcc00;
-    color: #000;
-    border: none;
-    padding: 12px;
-    margin-top: 1.5rem;
-    border-radius: 8px;
-    font-weight: bold;
-    text-transform: uppercase;
+    background: var(--dark); color: var(--gold);
+    border: none; padding: 12px; border-radius: 10px;
+    font-weight: 800; font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem; letter-spacing: 0.5px; text-transform: uppercase;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.25s, color 0.25s, transform 0.2s;
+}
+.order-btn:hover { background: var(--gold); color: #000; transform: translateY(-1px); }
+.order-btn:active { transform: scale(0.98); }
+.order-btn--custom { background: var(--gold); color: #000; }
+.order-btn--custom:hover { background: var(--gold-dim); color: #000; }
+
+/*Ostoskori juttui*/
+#cart-panel {
+    position: fixed; right: -420px; top: 0;
+    width: 380px; height: 100%;
+    background: #fff;
+    box-shadow: -4px 0 40px rgba(0,0,0,0.18);
+    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    display: flex; flex-direction: column;
+    font-family: 'Nunito', sans-serif;
+    overflow: hidden;
+}
+.cart-header { background: var(--dark); color: var(--white); padding: 1.4rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.cart-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 1px; }
+#close-cart { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; transition: background 0.2s; }
+#close-cart:hover { background: rgba(255,255,255,0.2); }
+
+.cart-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+.cart-empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.95rem; }
+
+.cart-item { display: flex; align-items: center; padding: 0.9rem 0; border-bottom: 1px solid #f0f0f0; gap: 0.5rem; }
+.cart-item-name { font-weight: 700; font-size: 0.92rem; color: var(--dark); flex: 1; }
+.cart-item-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+.cart-item-controls button {
+    width: 26px; height: 26px;
+    border-radius: 50%; border: none; padding: 0;
+    background: #ebebeb; color: var(--dark);
+    font-weight: 800; font-size: 0.95rem;
     cursor: pointer;
-    transition: background 0.3s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+    line-height: 1;
 }
+.cart-item-controls button:hover { background: #d0d0d0; }
+.cart-item-qty { font-weight: 800; font-size: 0.95rem; min-width: 20px; text-align: center; }
 
-.order-btn:hover {
-    background: #e6b800;
+.cart-footer { padding: 1.2rem 1.5rem; border-top: 2px solid #f0f0f0; flex-shrink: 0; }
+.cart-total { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 800; margin-bottom: 1rem; color: var(--dark); }
+.checkout-btn { width: 100%; background: var(--gold); color: #000; border: none; padding: 14px; border-radius: 10px; font-size: 1rem; font-weight: 900; font-family: 'Nunito', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+.checkout-btn:hover { background: var(--gold-dim); transform: translateY(-1px); }
+
+#cart-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9998; backdrop-filter: blur(2px); }
+#cart-overlay.active { display: block; }
+
+/* ylös pompaava ilmoitus */
+.toast {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--dark); color: var(--gold);
+    border: 1px solid rgba(255,204,0,0.2);
+    padding: 0.75rem 1.6rem; border-radius: 100px;
+    font-weight: 700; font-size: 0.9rem;
+    box-shadow: var(--shadow);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 99999;
 }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* footer juttu(pohjassa olevat jutut) */
+.site-footer { background: var(--dark); color: #888; padding: 2.5rem 2rem; text-align: center; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.footer-logo { height: 48px; width: 48px; object-fit: contain; opacity: 0.85; border-radius: 12px; }
+.footer-inner p { font-size: 0.82rem; }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { color: #888; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+/* poistaa omat nappulat numero inputista(pizza määrä) */
 input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/*Käytetään pizza korteissa ja auth korteissa kirjautumisessa*/
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-input[type=number] {
-    -moz-appearance: textfield;
+
+/* kirjautumis sivu*/
+.auth-hero {
+    background: var(--dark);
+    color: var(--white);
+    padding: 5rem 2.5rem 4rem;
+    position: relative;
+    overflow: hidden;
 }
-.about {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 60px 15%;
+.auth-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 20% 50%, rgba(255,204,0,0.07) 0%, transparent 70%);
+    pointer-events: none;
 }
-.about-text {
-    width: 50%;
-    margin-top: 80px;
+.auth-hero-content { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+.auth-hero-content h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    line-height: 1; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 1rem;
 }
-.about-text h1 {
-font-size: 42px;
-margin-bottom: 30px;
+.auth-hero-content h1 span { color: var(--gold); }
+.auth-hero-content p { font-size: 1.05rem; color: #aaa; max-width: 480px; font-weight: 600; line-height: 1.6; }
+
+.auth-container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
 }
-.about-text p {
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 20px;
+.auth-tabs {
+    display: flex;
+    margin-bottom: 1.8rem;
+    background: #e8e6e2;
+    border-radius: 12px;
+    padding: 5px;
 }
-.about-image {
-    width: 45%;
-    
+.auth-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.7rem 1rem;
+    border-radius: 9px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s, box-shadow 0.25s;
 }
-.about-image img {
+.auth-tab.active { background: var(--dark); color: var(--gold); box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+
+.auth-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    padding: 2.4rem 2.2rem;
+    animation: fadeUp 0.4s ease both;
+}
+.auth-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 1.5px;
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 0.3rem;
+}
+.auth-subtitle {
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 1.8rem;
+}
+.auth-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-group label {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--dark);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+.form-group input[type="text"],
+.form-group input[type="password"] {
     width: 100%;
-    border-radius: 20%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark);
+    background: #fafafa;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
-
-
-  
-/* Puhelinta varten! */
-@media screen and (max-width: 768px) {
-    .nav-links {
-        flex-direction: column;
-        align-items: center;
-    }
-    .cart-container {
-        margin-left: 0;
-        margin-top: 15px;
-    }
+.form-group input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(255,204,0,0.15);
+    background: #fff;
 }
+.form-hint { font-size: 0.76rem; color: #aaa; font-weight: 600; }
+
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 3.5rem; }
+.toggle-pw {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    font-size: 0.75rem; font-family: 'Nunito', sans-serif; font-weight: 800;
+    color: var(--muted); cursor: pointer;
+    padding: 3px 6px; border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+    letter-spacing: 0.5px; text-transform: uppercase;
+}
+.toggle-pw:hover { color: var(--dark); background: #f0f0f0; }
+
+.auth-error {
+    background: rgba(220, 53, 69, 0.08);
+    border: 1px solid rgba(220, 53, 69, 0.25);
+    color: #c0392b;
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+    display: none;
+}
+.auth-error:not(:empty) { display: block; }
+
+.auth-success {
+    background: rgba(39, 174, 96, 0.08);
+    border: 1px solid rgba(39, 174, 96, 0.25);
+    color: #1e8449;
+    border-radius: 8px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+    display: none;
+}
+.auth-success:not(:empty) { display: block; }
+
+.auth-submit-btn {
+    width: 100%;
+    background: var(--dark); color: var(--gold);
+    border: none; padding: 0.85rem;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem; font-weight: 900;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    cursor: pointer; margin-top: 0.4rem;
+    transition: background 0.25s, color 0.25s, transform 0.2s;
+}
+.auth-submit-btn:hover { background: var(--gold); color: #000; transform: translateY(-1px); }
+.auth-submit-btn:active { transform: scale(0.98); }
+
+.auth-switch { text-align: center; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.auth-switch a { color: var(--dark); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.auth-switch a:hover { color: var(--gold-dim); }
