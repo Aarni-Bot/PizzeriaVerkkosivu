@@ -1,45 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const CART_KEY   = 'pizzanyt_cart';
+    const CART_KEY  = 'pizzanyt_cart';
+    const loadCart  = () => { try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; } catch { return {}; } };
+    const saveCart  = (c) => localStorage.setItem(CART_KEY, JSON.stringify(c));
     const PRICES_KEY = 'pizzanyt_prices';
-    const loadCart   = () => { try { return JSON.parse(localStorage.getItem(CART_KEY))   || {}; } catch { return {}; } };
-    const saveCart   = (c) => localStorage.setItem(CART_KEY, JSON.stringify(c));
-    // Hintataulukko tallennetaan erikseen, jotta ostoskorissa voidaan laskea summa
     const loadPrices = () => { try { return JSON.parse(localStorage.getItem(PRICES_KEY)) || {}; } catch { return {}; } };
     const savePrices = (p) => localStorage.setItem(PRICES_KEY, JSON.stringify(p));
     const cart       = loadCart();
     const cartPrices = loadPrices();
-
-    const userCartKey    = (u) => 'pizzanyt_cart_'   + u;
-    const userPricesKey  = (u) => 'pizzanyt_prices_' + u;
-    const loadUserCart   = (u) => { try { return JSON.parse(localStorage.getItem(userCartKey(u)))   || {}; } catch { return {}; } };
-    const loadUserPrices = (u) => { try { return JSON.parse(localStorage.getItem(userPricesKey(u))) || {}; } catch { return {}; } };
-    const saveUserCart   = (u, c) => localStorage.setItem(userCartKey(u),   JSON.stringify(c));
-    const saveUserPrices = (u, p) => localStorage.setItem(userPricesKey(u), JSON.stringify(p));
-
-    // Yhdistetään kaksi koria ja lisätään  niiden määrät yhteen
-    const mergeCarts = (base, incoming) => {
-        const merged = Object.assign({}, base);
-        Object.entries(incoming).forEach(([k, v]) => { merged[k] = (merged[k] || 0) + v; });
-        return merged;
-    };
-
-    // Ladataan kirjautuneen käyttäjän kori heti käynnistyessä, jos käyttäjä on jo sisällä
-    const currentUser = localStorage.getItem('pizzanyt_loggedin');
-    if (currentUser) {
-        const userCart   = loadUserCart(currentUser);
-        const userPrices = loadUserPrices(currentUser);
-        // Yhdistetään mahdollinen kirjautumaton kori käyttäjän koriin
-        const guestCart  = loadCart();
-        const merged     = mergeCarts(userCart, guestCart);
-        Object.keys(cart).forEach(k => delete cart[k]);
-        Object.assign(cart, merged);
-        Object.assign(cartPrices, userPrices, loadPrices());
-        // Tallennetaan yhdistetty kori käyttäjälle ja tyhjennetään vieraskori
-        saveUserCart(currentUser, cart);
-        saveUserPrices(currentUser, cartPrices);
-        saveCart(cart);
-        savePrices(cartPrices);
-    }
 
     const cartBadges = document.querySelectorAll('.cart-quantity');
     const toast      = document.getElementById('toast');
@@ -71,18 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cartBadges.forEach(el => el.textContent = total);
     };
 
-    // Tallennetaan kori oikeaan paikkaan: käyttäjäkohtaisesti jos kirjautunut
-    const persistCart = () => {
-        saveCart(cart);
-        savePrices(cartPrices);
-        const u = localStorage.getItem('pizzanyt_loggedin');
-        if (u) {
-            saveUserCart(u, cart);
-            saveUserPrices(u, cartPrices);
-        }
-    };
 
-    //Ostoskori paneelin sisällön luonti
+    //Ostoskori paneelin sisältö
     const renderPanel = () => {
         const items = Object.entries(cart);
         const total = items.reduce((s, [, q]) => s + q, 0);
@@ -104,24 +61,24 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>`).join('')}
             </div>
-        ${items.length > 0 ? `
+            ${items.length > 0 ? `
             <div class="cart-footer">
                 <div class="cart-total"><span>Yhteensä (kpl)</span><span>${total} kpl</span></div>
-                <div class="cart-total"><span>Yhteensä (€)</span><span>${items.reduce((s, [name, qty]) => s + (cartPrices[name] || 0) * qty, 0).toFixed(2).replace('.', ',')} €</span></div>
+                <div class="cart-total"><span>Yhteensä (€)</span><span>${items.reduce((s,[n,q])=>s+(cartPrices[n]||0)*q,0).toFixed(2).replace('.',',')} €</span></div>
                 <button class="checkout-btn">Tilaa nyt</button>
             </div>` : ''}
         `;
 
         document.getElementById('close-cart').onclick = closeCart;
 
-        // kaikki muutos napit korissa ostoskorissa
+        // Muutos napit korissa ostoskori paneelissa
         panel.querySelectorAll('.edit-qty').forEach(btn => {
             btn.addEventListener('click', () => {
                 const name   = btn.dataset.name;
                 const change = parseInt(btn.dataset.change);
                 cart[name] = (cart[name] || 0) + change;
                 if (cart[name] <= 0) delete cart[name];
-                persistCart();
+                saveCart(cart);
                 updateCount();
                 renderPanel();
             });
@@ -130,14 +87,109 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ei yhdistä mihinkään tekee vaan viestin että voi näyttää että toimii
         const checkoutBtn = panel.querySelector('.checkout-btn');
         if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', () => {
-                showToast('Tilauksesi on vastaanotettu!');
-                Object.keys(cart).forEach(k => delete cart[k]);
-                persistCart();
-                updateCount();
-                closeCart();
-            });
+            checkoutBtn.addEventListener('click', () => openCheckoutModal());
         }
+    };
+
+    const coOverlay = document.createElement('div');
+    coOverlay.id = 'checkout-modal-overlay';
+    document.body.appendChild(coOverlay);
+
+    const coModal = document.createElement('div');
+    coModal.id = 'checkout-modal';
+    document.body.appendChild(coModal);
+
+    const closeCheckoutModal = () => { coModal.classList.remove('active'); coOverlay.classList.remove('active'); };
+    coOverlay.addEventListener('click', closeCheckoutModal);
+
+    //Tilaus viimeistely 
+    const openCheckoutModal = () => {
+        const totalEur = Object.entries(cart)
+            .reduce((s, [name, qty]) => s + (cartPrices[name] || 0) * qty, 0)
+            .toFixed(2).replace('.', ',');
+        coModal.innerHTML = `
+            <div class="co-header">
+                <h2>Tilauksen viimeistely</h2>
+                <button class="co-close-btn" id="co-close">&#10005;</button>
+            </div>
+            <div class="co-body" id="co-body">
+                <p class="co-step-label">Valitse toimitustapa</p>
+                <div class="co-delivery-options">
+                    <button class="co-option-btn" id="co-pickup">
+                        <span class="co-option-title">Nouto</span>
+                        <span class="co-option-sub">Valmis ~10 min</span>
+                    </button>
+                    <button class="co-option-btn" id="co-delivery">
+                        <span class="co-option-title">Kuljetus</span>
+                        <span class="co-option-sub">Ilmainen · ~35 min</span>
+                    </button>
+                </div>
+                <div class="co-address-wrap" id="co-address-wrap" style="display:none;">
+                    <label class="co-label" for="co-address-input">Toimitusosoite</label>
+                    <input class="co-input" id="co-address-input" type="text" placeholder="Katuosoite, kaupunki" autocomplete="street-address">
+                    <div class="co-address-error" id="co-address-error"></div>
+                </div>
+                <button class="co-confirm-btn" id="co-confirm" style="display:none;">Vahvista tilaus</button>
+            </div>
+        `;
+
+        coModal.classList.add('active');
+        coOverlay.classList.add('active');
+
+        document.getElementById('co-close').addEventListener('click', closeCheckoutModal);
+
+        let selectedMethod = null;
+        const pickupBtn   = document.getElementById('co-pickup');
+        const deliveryBtn = document.getElementById('co-delivery');
+        const addressWrap = document.getElementById('co-address-wrap');
+        const confirmBtn  = document.getElementById('co-confirm');
+        const addressErr  = document.getElementById('co-address-error');
+
+        const selectMethod = (method) => {
+            selectedMethod = method;
+            pickupBtn.classList.toggle('co-option-btn--active',   method === 'pickup');
+            deliveryBtn.classList.toggle('co-option-btn--active', method === 'delivery');
+            addressWrap.style.display = method === 'delivery' ? 'flex' : 'none';
+            confirmBtn.style.display  = 'block';
+            addressErr.textContent    = '';
+        };
+
+        pickupBtn.addEventListener('click',   () => selectMethod('pickup'));
+        deliveryBtn.addEventListener('click', () => selectMethod('delivery'));
+
+        confirmBtn.addEventListener('click', () => {
+            if (selectedMethod === 'delivery') {
+                const addr = document.getElementById('co-address-input').value.trim();
+                if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
+            }
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 40));
+            const timeStr    = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
+            const isDelivery = selectedMethod === 'delivery';
+            const addrVal    = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
+            //Tilaus viimeistely valmis
+            document.getElementById('co-body').innerHTML = `
+                <div class="co-success">
+                    <div class="co-success-icon">✓</div>
+                    <h3>Tilaus vastaanotettu!</h3>
+                    <p class="co-success-method">${isDelivery ? 'Kuljetus osoitteeseen' : 'Nouto myymälästä'}</p>
+                    ${isDelivery ? '<p class="co-success-addr">' + addrVal + '</p>' : ''}
+                    <div class="co-success-time">
+                        <span class="co-time-label">${isDelivery ? 'Arvioitu toimitusaika' : 'Arvioitu valmistumisaika'}</span>
+                        <span class="co-time-value">${timeStr}</span>
+                    </div>
+                    <p class="co-success-total">Yhteensä <strong>${totalEur} €</strong></p>
+                    <button class="co-done-btn" id="co-done">Sulje</button>
+                </div>
+            `;
+
+            Object.keys(cart).forEach(k => delete cart[k]);
+            saveCart(cart);
+            updateCount();
+            closeCart();
+
+            document.getElementById('co-done').addEventListener('click', closeCheckoutModal);
+        });
     };
 
     const openCart  = () => { renderPanel(); panel.style.right = '0px'; overlay.classList.add('active'); };
@@ -163,11 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const orderBtn  = card.querySelector('.order-btn');
         if (!qtyInput || !orderBtn) return;
         const name = card.querySelector('h3').textContent.trim();
-        // Haetaan hinta kortista ja tallennetaan data-attribuuttiin myöhempää käyttöä varten
-        const priceEl   = card.querySelector('.pizza-price');
-        const priceText = priceEl ? priceEl.textContent.trim() : '';
-        const priceNum  = parseFloat(priceText.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
-        if (priceNum > 0) orderBtn.dataset.price = priceNum;
 
         decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
         incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
@@ -178,15 +225,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         //ku lisäät koriin pizzan
+        const priceEl  = card.querySelector('.pizza-price');
+        const priceNum = parseFloat((priceEl ? priceEl.textContent : '').replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
         orderBtn.addEventListener('click', () => {
-            // Estetään tuplapainallus kesken animaation
             if (orderBtn.dataset.busy) return;
             orderBtn.dataset.busy = '1';
             const qty = parseInt(qtyInput.value) || 1;
             cart[name] = (cart[name] || 0) + qty;
-            // Tallennetaan hinta ostoskoriin nimellä, jos ei ole vielä
             if (priceNum > 0) cartPrices[name] = priceNum;
-            persistCart();
+            saveCart(cart);
+            savePrices(cartPrices);
             updateCount();
             qtyInput.value = 1;
             showToast(qty + 'x ' + name + ' lisätty koriin!');
@@ -225,17 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            // Tallennetaan kori käyttäjälle ennen uloskirjautumista
-            const u = localStorage.getItem('pizzanyt_loggedin');
-            if (u) {
-                saveUserCart(u, cart);
-                saveUserPrices(u, cartPrices);
-            }
-            // Tyhjennetään aktiivinen (jaettu) kori, jotta seuraava käyttäjä alkaa puhtaalta pöydältä
-            Object.keys(cart).forEach(k => delete cart[k]);
-            saveCart(cart);
-            savePrices({});
-            updateCount();
             // Poistetaan nimi ja muut näkyvistä, mutta pysyy local storagessa
             localStorage.removeItem('pizzanyt_loggedin');
             if (loginLi) loginLi.style.display = '';
