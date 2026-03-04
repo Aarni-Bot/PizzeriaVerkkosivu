@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
             }
             const now = new Date();
-            now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 40));
+            now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
             const timeStr    = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
             const isDelivery = selectedMethod === 'delivery';
             const addrVal    = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="co-success">
                     <div class="co-success-icon">✓</div>
                     <h3>Tilaus vastaanotettu!</h3>
-                    <p class="co-success-method">${isDelivery ? 'Kuljetus osoitteeseen' : 'Nouto myymälästä'}</p>
+                    <p class="co-success-method">${isDelivery ? 'Kuljetus osoitteeseen' : 'Nouda pizzasi osoitteesta: Aleksis Kiven tie 15, Kerava'}</p>
                     ${isDelivery ? '<p class="co-success-addr">' + addrVal + '</p>' : ''}
                     <div class="co-success-time">
                         <span class="co-time-label">${isDelivery ? 'Arvioitu toimitusaika' : 'Arvioitu valmistumisaika'}</span>
