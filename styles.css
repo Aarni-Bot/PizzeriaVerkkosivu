@@ -247,6 +247,31 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
 .order-btn--custom { background: var(--gold); color: #000; }
 .order-btn--custom:hover { background: var(--gold-dim); color: #000; }
 
+.about {
+    display: flex;           
+  align-items: center;    
+  justify-content: space-between;
+  margin: 50px;
+}
+.about div {
+    width: 600px;
+    margin: 50px auto;
+}
+.about h1 {
+    font-size: 40px;
+    margin-bottom: 100px;
+}
+.about p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+.about-image {
+    margin-left: 50%;
+    width: 40%;
+    height: 60%;
+}
+
 .reviews {
     text-align: center;
     background-color: whitesmoke;
