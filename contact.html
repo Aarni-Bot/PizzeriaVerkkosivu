@@ -11,22 +11,27 @@
 
     <nav class="navbar">
         <div class="logo">
-            <a href="index.html">Pizza<span>Nyt</span></a>
+            <a href="index.html">
+                <img src="images/Logo.png" alt="PizzaNyt" class="logo-img">
+            </a>
         </div>
         <ul class="nav-links">
             <li><a href="index.html">Koti</a></li>
             <li><a href="menu.html">Ruokalista</a></li>
             <li><a href="contact.html" class="selected">Ota yhteyttä</a></li>
-            <li class="login-btn"><a href="login.html">Kirjaudu</a></li>
+            <li class="login-btn" id="nav-login-li"><a href="login.html">Kirjaudu Sisään</a></li>
+            <li id="nav-user-info" style="display:none;">
+                <span id="nav-username" class="nav-username"></span>
+                <button id="nav-logout-btn" class="nav-logout-btn">Kirjaudu ulos</button>
+            </li>
             <li class="cart-container">
-                <a class="cart-link">
+                <a class="cart-link" href="#">
                     <div class="cart-wrapper">
                         <img src="images/cart.png" alt="Ostoskori" class="cart-icon">
                         <span class="cart-quantity" id="cart-count">0</span>
                     </div>
                 </a>
             </li>
-            
         </ul>
     </nav>
 
