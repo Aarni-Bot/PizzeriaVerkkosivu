@@ -413,16 +413,16 @@ input[type=number] { -moz-appearance: textfield; }
 
 /*Yhteyden otto*/
 
-.email {margin-top: 5rem; text-align: center;}
-.call-or-text {margin-top: 5rem; margin-bottom: 15rem; text-align: center;}
-.email h2, .call-or-text h2{font-size: 5rem; text-align: center;}
+.email {margin-top: 5rem; text-align: center; background-color: #e6b800; margin-left: 6rem; margin-right: 6rem; border-radius: 2rem;}
+.call-or-text {margin-top: 5rem; margin-bottom: 15rem; text-align: center; background-color: #e6b800; margin-left: 24rem; margin-right: 24rem; border-radius: 2rem;}
+.email h2, .call-or-text h2{font-size: 3rem; text-align: center; }
+.email h3, .call-or-text h3{font-size: 1rem; text-align: center; color: #00000086;}
 
 .email a[href^="mailto:"], 
-.call-or-text a[href^="tel:"] { color: #e6b800; transition: color 0.2s; text-decoration: none; font-size: 2rem; text-align: center;}
+.call-or-text a[href^="tel:"] { color: #000; transition: color 0.2s; text-decoration: none; font-size: 2rem; text-align: center; }
 
 .email a[href^="mailto:"]:hover, 
-.call-or-text a[href^="tel:"]:hover { color: #f0d66f; transition: color 0.2s; text-decoration:none; }
-
+.call-or-text a[href^="tel:"]:hover { color: #00000086; transition: color 0.2s; text-decoration:none; }
 
 /* kirjautumis sivu*/
 .auth-hero {
