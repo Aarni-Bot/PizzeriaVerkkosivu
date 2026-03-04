@@ -252,6 +252,8 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
   align-items: center;    
   justify-content: space-between;
   margin: 50px;
+  font-family: 'Alyamama', sans-serif;
+  font-size: 1mm;
 }
 .about div {
     width: 600px;
@@ -272,22 +274,60 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
     height: 60%;
 }
 
-.reviews {
+.about {
+    display: flex;           
+  align-items: center;    
+  justify-content: space-between;
+  margin: 50px;
+  font-family: 'Alyamama', sans-serif;
+  font-size: 1mm;
+}
+.about div {
+    width: 600px;
+    margin: 50px auto;
+}
+.about h1 {
+    font-size: 40px;
+    margin-bottom: 100px;
+}
+.about p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+.about-image {
+    margin-left: 50%;
+    width: 40%;
+    height: 60%;
+}
+.reviews1 {
     text-align: center;
     background-color: whitesmoke;
 }
-.reviews p {
-    font-size: 90%;
-}
-.reviews ul {
- text-align: left;
- margin-left: 400px;
- border: 1px;
- width: 400px;
- height: 190px;
- background-color: lightgray;
- font-family:'Courier New', Courier, monospace
-}
+
+.reviews2 {
+    display: flex;
+    justify-content: center;
+    gap: 20px;           
+  }
+  
+  .box {
+    background: #ddd;
+    padding: 20px;
+    width: 500px;
+    border-radius: 12px;
+  }
+
+  .author {
+    margin-top: 15px;
+    text-align: left;
+  }
+  .author span {
+    display: block;
+    color: gray;
+    font-size: 14px;
+  }
+
 
 /*Ostoskori juttui*/
 #cart-panel {
