@@ -6,29 +6,46 @@
         <title>PizzaNyt - Pääsivu</title>
         <meta name="viewport" content ="width-device-width, initial-scale=1.0"> <!-- Puhelimen koko-->
         <link rel="icon" type="image/x-icon" href="/images/WebsiteLogo.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Alyamama:wght@300..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href ="styles.css">
     </head>
     <body>
         <nav class="navbar">
             <div class="logo">
-                <a href="index.html">Pizza<span>Nyt</span></a>
+                <a href="index.html">
+                    <img src="images/Logo.png" alt="PizzaNyt" class="logo-img">
+                </a>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html" class="selected">Koti</a></li>
                 <li><a href="menu.html">Ruokalista</a></li>
                 <li><a href="contact.html">Ota yhteyttä</a></li>
-                <li class="login-btn"><a href="login.html">Kirjaudu</a></li>
+                <li class="login-btn" id="nav-login-li"><a href="login.html">Kirjaudu Sisään</a></li>
+                <li id="nav-user-info" style="display:none;">
+                    <span id="nav-username" class="nav-username"></span>
+                    <button id="nav-logout-btn" class="nav-logout-btn">Kirjaudu ulos</button>
+                </li>
                 <li class="cart-container">
-                    <a class="cart-link">
+                    <a class="cart-link" href="#">
                         <div class="cart-wrapper">
                             <img src="images/cart.png" alt="Ostoskori" class="cart-icon">
                             <span class="cart-quantity" id="cart-count">0</span>
                         </div>
                     </a>
                 </li>
-                
             </ul>
         </nav>
+    
+        <section class="menu-hero">
+            <div class="menu-hero-content">
+                <span class="menu-label">Keravan paras pizza vuodesta 2026</span>
+                <h1>Koti<span></span></h1>
+                <p>Käsintehdyt pizzat parhaista raaka-aineista, suoraan uunista sinulle.</p>
+            </div>
+            <div class="menu-hero-divider"></div>
+        </section>
 
        <section class="about">
          <div class ="about-text">
@@ -49,23 +66,30 @@
          </div> 
         
         </section>
-        
-        <div class="reviews">
+
+        <div class="reviews1">
             <h1>Asiakaspalautteet</h1>
          <p>Lue, mitä asiakkaamme ajattelevat meistä</p>
-         <ul>
-            <il>Herkullisia pizzoja ja ensiluokkaista asiakaspalvelua.
-               <br>
-               <br>
-               <br>
-
-                <strong>Ivan K.</strong>
-                <br>
-                Korso
-
-            </il>
-         </ul>
+         
         </div>
+        <div class="reviews2">
+            <div class="box">
+                <h3>⭐⭐⭐⭐⭐</h3>
+                <p>Herkullisia pizzoja ja ensiluokkaista asiakaspalvelua.</p>
+                <div class="author">
+                    <strong>Harri S.</strong>
+                    <span>Kerava</span>
+                </div>
+            </div>
+            <div class="box">
+                <h3>⭐⭐⭐⭐⭐</h3>
+                <p> PizzaNyt mielestäni tämä on paras paikka tilata pizzaa. Pidän todella heidän nimikkokastikkeestaan.</p>
+                <div class ="author">
+                    <strong>Ivan K.</strong>
+                    <span>Korso</span>
+                </div>
+            </div>
+          </div>
         
         <script>src ="script.js"</script>
         
