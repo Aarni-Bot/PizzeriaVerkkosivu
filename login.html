@@ -113,7 +113,9 @@
     <footer class="site-footer">
         <div class="footer-inner">
             <img src="images/Logo.png" alt="PizzaNyt" class="footer-logo">
-            <p>© 2026 Pizza Nyt.</p>
+            <p>© 2026 Pizza Nyt. </p>
+            <p>Aleksis Kiven tie 15, 04200 Kerava</p>
+            <a href="mailto:pizzanyt@gmail.com">pizzanyt@gmail.com</a>
             <div class="footer-links">
                 <a href="index.html">Koti</a>
                 <a href="menu.html">Ruokalista</a>
@@ -122,6 +124,7 @@
         </div>
     </footer>
 
+    <!--toast on se juttu joka pompahtaa ylös-->
     <div id="toast" class="toast"></div>
     <script src="script.js"></script>
     <script>
@@ -248,7 +251,7 @@
             setTimeout(() => window.location.href = getReturnPage(), 300);
         }
 
-        // Enter lähettää lomakkeen tai jotain
+        // Enter lähettää lomakkeen
         document.addEventListener('keydown', e => {
             if (e.key !== 'Enter') return;
             const loginVisible = document.getElementById('form-login').style.display !== 'none';
