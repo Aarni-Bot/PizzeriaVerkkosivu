@@ -247,6 +247,23 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
 .order-btn--custom { background: var(--gold); color: #000; }
 .order-btn--custom:hover { background: var(--gold-dim); color: #000; }
 
+.reviews {
+    text-align: center;
+    background-color: whitesmoke;
+}
+.reviews p {
+    font-size: 90%;
+}
+.reviews ul {
+ text-align: left;
+ margin-left: 400px;
+ border: 1px;
+ width: 400px;
+ height: 190px;
+ background-color: lightgray;
+ font-family:'Courier New', Courier, monospace
+}
+
 /*Ostoskori juttui*/
 #cart-panel {
     position: fixed; right: -420px; top: 0;
