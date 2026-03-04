@@ -316,6 +316,7 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
     padding: 20px;
     width: 500px;
     border-radius: 12px;
+    margin-bottom: 10rem;
   }
 
   .author {
