@@ -67,29 +67,28 @@
         
         </section>
 
-        <div class="reviews1">
-            <h1>Asiakaspalautteet</h1>
-         <p>Lue, mitä asiakkaamme ajattelevat meistä</p>
-         
+        <div class ="reviews">
+            <h2>Jätä palaute</h2>
+            
+            <input type="email" id="email" placeholder="Syötä sähköposti">
+            
+            <div class="rating">
+                <label>Arvosana:</label>
+                <select id="rating">
+                  
+                  <option value="4">5 ⭐</option>
+                  <option value="4">4 ⭐</option>
+                  <option value="3">3 ⭐</option>
+                  <option value="2">2 ⭐</option>
+                  <option value="1">1 ⭐</option>
+                </select>
+            </div>
+            <textarea id="reviewText" placeholder="Kirjoita palaute..."></textarea>
+            <button onclick="addReview()">Lähetä</button>
+            <h3>Asiakaspalautteet</h3>
+            <div id="reviewList"></div>
         </div>
-        <div class="reviews2">
-            <div class="box">
-                <h3>⭐⭐⭐⭐⭐</h3>
-                <p>Herkullisia pizzoja ja ensiluokkaista asiakaspalvelua.</p>
-                <div class="author">
-                    <strong>Harri S.</strong>
-                    <span>Kerava</span>
-                </div>
-            </div>
-            <div class="box">
-                <h3>⭐⭐⭐⭐⭐</h3>
-                <p> PizzaNyt mielestäni tämä on paras paikka tilata pizzaa. Pidän todella heidän nimikkokastikkeestaan.</p>
-                <div class ="author">
-                    <strong>Ivan K.</strong>
-                    <span>Korso</span>
-                </div>
-            </div>
-          </div>
+
         
           <footer class="site-footer">
             <div class="footer-inner">

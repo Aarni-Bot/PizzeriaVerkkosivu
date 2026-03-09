@@ -281,3 +281,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+const form = document.getElementById('reviewForm');
+const reviewsList = document.getElementById('reviewsList');
+
+
+let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+
+function displayReviews() {
+  reviewsList.innerHTML = '';
+  reviews.slice().reverse().forEach(review => {
+    const reviewDiv = document.createElement('div');
+    reviewDiv.classList.add('review');
+    reviewDiv.innerHTML = `
+      <div class="review-email">${review.email}</div>
+      <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+      <div class="review-text">${review.text}</div>
+    `;
+    reviewsList.appendChild(reviewDiv);
+  });
+}
+
+
+displayReviews();
+
+form.addEventListener('addReview', function(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const rating = parseInt(document.getElementById('rating').value);
+  const text = document.getElementById('text').value;
+
+  const newReview = { email, rating, text };
+  
+  
+  reviews.push(newReview);
+  localStorage.setItem('reviews', JSON.stringify(reviews));
+
+  
+  displayReviews();
+
+  
+  form.reset();
+});
