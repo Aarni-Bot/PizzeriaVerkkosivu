@@ -161,6 +161,52 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMethod === 'delivery') {
                 const addr = document.getElementById('co-address-input').value.trim();
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
+                else {
+                    const calculateLengthToAdress = () => {
+                        const apiKey = '69ae74e043cd5168620268qvma49b6e';
+                        const address = document.getElementById('co-address-input').value.trim();
+                        const shopAddress = 'Aleksis Kiven tie 15, 04200 Kerava';
+
+                        const urlCustomer = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
+                        const urlShop = `https://geocode.maps.co/search?q=${encodeURIComponent(shopAddress)}&api_key=${apiKey}`;
+
+                        Promise.all([
+                            fetch(urlCustomer).then(r => r.json()),
+                            fetch(urlShop).then(r => r.json())
+                        ])
+                        .then(([customerData, shopData]) => {
+                            if (!customerData[0] || !shopData[0]) {
+                                console.error('Osoitetta ei löytynyt');
+                                return;
+                            }
+
+                            const lat1 = parseFloat(shopData[0].lat);
+                            const lon1 = parseFloat(shopData[0].lon);
+                            const lat2 = parseFloat(customerData[0].lat);
+                            const lon2 = parseFloat(customerData[0].lon);
+
+                            const toRad = d => d * Math.PI / 180;
+                            const R = 6371;
+
+                            const dLat = toRad(lat2 - lat1);
+                            const dLon = toRad(lon2 - lon1);
+
+                            const a =
+                                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+
+                            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                            const distance = R * c;
+
+                            console.log('Etäisyys kilometreinä:', distance.toFixed(2));
+                        })
+                        .catch(error => {
+                            console.error('Virhe kutsussa:', error);
+                        });
+                    }
+                    calculateLengthToAdress();
+                }
             }
             const now = new Date();
             now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
@@ -216,8 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!qtyInput || !orderBtn) return;
         const name = card.querySelector('h3').textContent.trim();
 
-        decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
-        incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
+        if (decBtn) decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
+        if (incBtn) incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
+
         qtyInput.addEventListener('input', () => {
             const v = parseInt(qtyInput.value);
             if (v > 99)            qtyInput.value = 99;
