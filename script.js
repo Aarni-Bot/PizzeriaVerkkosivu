@@ -7,10 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const savePrices = (p) => localStorage.setItem(PRICES_KEY, JSON.stringify(p));
     const cart       = loadCart();
     const cartPrices = loadPrices();
-
     const cartBadges = document.querySelectorAll('.cart-quantity');
     const toast      = document.getElementById('toast');
-
+    var distance     = 0;
     // Ostoskoripaneeli ja tummennus luodaan tässä, koska ne ei ole oikeesti missään sivussa
     const overlay = document.createElement('div');
     overlay.id = 'cart-overlay';
@@ -197,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 Math.sin(dLon/2) * Math.sin(dLon/2);
 
                             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                            const distance = R * c;
+                           distance = R * c;
 
                             console.log('Etäisyys kilometreinä:', distance.toFixed(2));
                         })
@@ -209,10 +208,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             const now = new Date();
-            now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
+            //now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
+            switch (selectedMethod) {
+                case ('pickup'):
+                    now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimitus
+                case ('delivery'):
+                    console.log(distance);
+                    switch (true) {
+                        case (distance.toFixed(2) < 20.0 && distance.toFixed(2) > 10.0):
+                            now.setMinutes(now.getMinutes() + 30); //Pizza normi, ei täytteitä, toimitus
+                            console.log("20min  + 10min");
+                            break;
+                        case (distance.toFixed(2) < 10.0 && distance.toFixed(2) > 3.0):
+                            now.setMinutes(now.getMinutes() + 20); //Pizza normi, ei täytteitä, toimitus
+                            console.log("10min  + 10min");
+                            break;         
+                        case (distance.toFixed(2) < 3.0 && distance.toFixed(2) > 0.0):
+                            now.setMinutes(now.getMinutes() + 15); //Pizza normi, ei täytteitä, toimitus
+                            console.log("5min + 10min");
+                            break;
+                        default:
+                            selectMethod('pickup');
+                            now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimituss
+                            console.log('Emme toimita yli 20 kilomterin päästä pizzeriastamme.');
+                        }
+            }
+
+
             const timeStr    = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
-            const isDelivery = selectedMethod === 'delivery';
-            const addrVal    = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
+            var isDelivery = selectedMethod === 'delivery';
+            var addrVal = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
+            console.log(distance);
+            console.log(addrVal);
+
             //Tilaus viimeistely valmis
             document.getElementById('co-body').innerHTML = `
                 <div class="co-success">
