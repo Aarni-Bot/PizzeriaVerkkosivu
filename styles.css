@@ -380,6 +380,46 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
 .review-text{
     color: #555;
 }
+.reviews {
+    width: 400px;
+    margin: 40px auto;
+    font-family: 'Alyamama', sans-serif;
+    text-align: center;
+    
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+button {
+    padding: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.review {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top:10px;
+    border-radius: 6px;
+    background: #fafafa
+}
+.review .rating {
+    color:orange;
+    font-size:18px;
+}
 
 /*Ostoskori juttui*/
 #cart-panel {

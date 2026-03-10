@@ -7,10 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const savePrices = (p) => localStorage.setItem(PRICES_KEY, JSON.stringify(p));
     const cart       = loadCart();
     const cartPrices = loadPrices();
-
     const cartBadges = document.querySelectorAll('.cart-quantity');
     const toast      = document.getElementById('toast');
-
+    var distance     = 0;
     // Ostoskoripaneeli ja tummennus luodaan tässä, koska ne ei ole oikeesti missään sivussa
     const overlay = document.createElement('div');
     overlay.id = 'cart-overlay';
@@ -161,12 +160,87 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMethod === 'delivery') {
                 const addr = document.getElementById('co-address-input').value.trim();
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
+                else {
+                    const calculateLengthToAdress = () => {
+                        const apiKey = '69ae74e043cd5168620268qvma49b6e';
+                        const address = document.getElementById('co-address-input').value.trim();
+                        const shopAddress = 'Aleksis Kiven tie 15, 04200 Kerava';
+
+                        const urlCustomer = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
+                        const urlShop = `https://geocode.maps.co/search?q=${encodeURIComponent(shopAddress)}&api_key=${apiKey}`;
+
+                        Promise.all([
+                            fetch(urlCustomer).then(r => r.json()),
+                            fetch(urlShop).then(r => r.json())
+                        ])
+                        .then(([customerData, shopData]) => {
+                            if (!customerData[0] || !shopData[0]) {
+                                console.error('Osoitetta ei löytynyt');
+                                return;
+                            }
+
+                            const lat1 = parseFloat(shopData[0].lat);
+                            const lon1 = parseFloat(shopData[0].lon);
+                            const lat2 = parseFloat(customerData[0].lat);
+                            const lon2 = parseFloat(customerData[0].lon);
+
+                            const toRad = d => d * Math.PI / 180;
+                            const R = 6371;
+
+                            const dLat = toRad(lat2 - lat1);
+                            const dLon = toRad(lon2 - lon1);
+
+                            const a =
+                                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+
+                            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                           distance = R * c;
+
+                            console.log('Etäisyys kilometreinä:', distance.toFixed(2));
+                        })
+                        .catch(error => {
+                            console.error('Virhe kutsussa:', error);
+                        });
+                    }
+                    calculateLengthToAdress();
+                }
             }
             const now = new Date();
-            now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
+            //now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
+            switch (selectedMethod) {
+                case ('pickup'):
+                    now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimitus
+                case ('delivery'):
+                    console.log(distance);
+                    switch (true) {
+                        case (distance.toFixed(2) < 20.0 && distance.toFixed(2) > 10.0):
+                            now.setMinutes(now.getMinutes() + 30); //Pizza normi, ei täytteitä, toimitus
+                            console.log("20min  + 10min");
+                            break;
+                        case (distance.toFixed(2) < 10.0 && distance.toFixed(2) > 3.0):
+                            now.setMinutes(now.getMinutes() + 20); //Pizza normi, ei täytteitä, toimitus
+                            console.log("10min  + 10min");
+                            break;         
+                        case (distance.toFixed(2) < 3.0 && distance.toFixed(2) > 0.0):
+                            now.setMinutes(now.getMinutes() + 15); //Pizza normi, ei täytteitä, toimitus
+                            console.log("5min + 10min");
+                            break;
+                        default:
+                            selectMethod('pickup');
+                            now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimituss
+                            console.log('Emme toimita yli 20 kilomterin päästä pizzeriastamme.');
+                        }
+            }
+
+
             const timeStr    = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
-            const isDelivery = selectedMethod === 'delivery';
-            const addrVal    = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
+            var isDelivery = selectedMethod === 'delivery';
+            var addrVal = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
+            console.log(distance);
+            console.log(addrVal);
+
             //Tilaus viimeistely valmis
             document.getElementById('co-body').innerHTML = `
                 <div class="co-success">
@@ -216,8 +290,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!qtyInput || !orderBtn) return;
         const name = card.querySelector('h3').textContent.trim();
 
-        decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
-        incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
+        if (decBtn) decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
+        if (incBtn) incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
+
         qtyInput.addEventListener('input', () => {
             const v = parseInt(qtyInput.value);
             if (v > 99)            qtyInput.value = 99;
@@ -326,3 +401,45 @@ form.addEventListener("submit", function(e){
 });
 
 showReviews();
+const form = document.getElementById('reviewForm');
+const reviewsList = document.getElementById('reviewsList');
+
+
+let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+
+function displayReviews() {
+  reviewsList.innerHTML = '';
+  reviews.slice().reverse().forEach(review => {
+    const reviewDiv = document.createElement('div');
+    reviewDiv.classList.add('review');
+    reviewDiv.innerHTML = `
+      <div class="review-email">${review.email}</div>
+      <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+      <div class="review-text">${review.text}</div>
+    `;
+    reviewsList.appendChild(reviewDiv);
+  });
+}
+
+
+displayReviews();
+
+form.addEventListener('addReview', function(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const rating = parseInt(document.getElementById('rating').value);
+  const text = document.getElementById('text').value;
+
+  const newReview = { email, rating, text };
+  
+  
+  reviews.push(newReview);
+  localStorage.setItem('reviews', JSON.stringify(reviews));
+
+  
+  displayReviews();
+
+  
+  form.reset();
+});

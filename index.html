@@ -69,8 +69,28 @@
         
         </section>
 
-        <div class="reviews">
-            <h2>Jätä palautetta</h2>
+        <div class ="reviews">
+            <h2>Jätä palaute</h2>
+            
+            <input type="email" id="email" placeholder="Syötä sähköposti">
+            
+            <div class="rating">
+                <label>Arvosana:</label>
+                <select id="rating">
+                  
+                  <option value="4">5 ⭐</option>
+                  <option value="4">4 ⭐</option>
+                  <option value="3">3 ⭐</option>
+                  <option value="2">2 ⭐</option>
+                  <option value="1">1 ⭐</option>
+                </select>
+            </div>
+            <textarea id="reviewText" placeholder="Kirjoita palaute..."></textarea>
+            <button onclick="addReview()">Lähetä</button>
+            <h3>Asiakaspalautteet</h3>
+            <div id="reviewList"></div>
+        </div>
+
         
             <form id="reviewForm">
                 <input type="email" id="remail" placeholder="Sähköposti" required>
