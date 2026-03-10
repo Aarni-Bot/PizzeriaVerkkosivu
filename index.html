@@ -47,6 +47,7 @@
             <div class="menu-hero-divider"></div>
         </section>
 
+
        <section class="about">
          <div class ="about-text">
             <h1>Tietoa meistä</h1>
@@ -60,6 +61,7 @@
 
             <p><strong>PizzaNyt - maku, johon voit luotta.</strong></p>
            
+
          </div>
          <div class="about-image">
             <img src="images/chef.png" alt="chef">
@@ -67,31 +69,30 @@
         
         </section>
 
-        <div class="reviews1">
-            <h1>Asiakaspalautteet</h1>
-         <p>Lue, mitä asiakkaamme ajattelevat meistä</p>
-         
-        </div>
-        <div class="reviews2">
-            <div class="box">
-                <h3>⭐⭐⭐⭐⭐</h3>
-                <p>Herkullisia pizzoja ja ensiluokkaista asiakaspalvelua.</p>
-                <div class="author">
-                    <strong>Harri S.</strong>
-                    <span>Kerava</span>
-                </div>
-            </div>
-            <div class="box">
-                <h3>⭐⭐⭐⭐⭐</h3>
-                <p> PizzaNyt mielestäni tämä on paras paikka tilata pizzaa. Pidän todella heidän nimikkokastikkeestaan.</p>
-                <div class ="author">
-                    <strong>Ivan K.</strong>
-                    <span>Korso</span>
-                </div>
-            </div>
-          </div>
+        <div class="reviews">
+            <h2>Jätä palautetta</h2>
         
-          <footer class="site-footer">
+            <form id="reviewForm">
+                <input type="email" id="remail" placeholder="Sähköposti" required>
+        
+                <select id="rating" required>
+                    <option value="5">5 ⭐</option>
+                    <option value="4">4 ⭐</option>
+                    <option value="3">3 ⭐</option>
+                    <option value="2">2 ⭐</option>
+                    <option value="1">1 ⭐</option>
+                </select>
+        
+                <textarea id="text" placeholder="Kirjoita palautetta..." required></textarea>
+        
+                <button type="submit">Lähetä</button>
+            </form>
+        
+            <div id="reviewsList"></div>
+        </div>
+        
+
+        <footer class="site-footer">
             <div class="footer-inner">
                 <img src="images/Logo.png" alt="PizzaNyt" class="footer-logo">
                 <p>© 2026 Pizza Nyt. </p>
@@ -105,11 +106,11 @@
             </div>
         </footer>
     
-        <script>src ="script.js"</script>
+        
         
 
 
-
+        <script src ="script.js"></script>
     </body>
-
+    
 </html>

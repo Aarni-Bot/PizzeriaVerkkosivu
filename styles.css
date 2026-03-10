@@ -300,35 +300,86 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
     width: 40%;
     height: 60%;
 }
-.reviews1 {
+.reviews{
+    max-width: 900px;
+    margin: 80px auto;
+    padding: 30px;
     text-align: center;
-    background-color: whitesmoke;
 }
 
-.reviews2 {
+.reviews h2{
+    margin-bottom: 25px;
+}
+
+#reviewForm{
     display: flex;
+    gap: 10px;
     justify-content: center;
-    gap: 20px;           
-  }
-  
-  .box {
-    background: #ddd;
-    padding: 20px;
-    width: 500px;
-    border-radius: 12px;
-    margin-bottom: 10rem;
-  }
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
 
-  .author {
-    margin-top: 15px;
-    text-align: left;
-  }
-  .author span {
-    display: block;
-    color: gray;
+#reviewForm input,
+#reviewForm select,
+#reviewForm textarea{
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
     font-size: 14px;
-  }
+}
 
+#reviewForm textarea{
+    min-width: 220px;
+    resize: none;
+}
+
+#reviewForm button{
+    background: #f1c40f;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#reviewForm button:hover{
+    background: #d4ac0d;
+}
+
+#reviewsList{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.review-card{
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-left: 5px solid #f1c40f;
+}
+
+.review-header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.review-email{
+    font-weight: bold;
+}
+
+.review-rating{
+    color: #f1c40f;
+    font-weight: bold;
+}
+
+.review-text{
+    color: #555;
+}
 
 /*Ostoskori juttui*/
 #cart-panel {
