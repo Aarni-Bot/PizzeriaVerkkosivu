@@ -1,136 +1,98 @@
 <!DOCTYPE html>
-<html lang ="fi">
-    
-    <head>
-        <meta charset="UTF-8">
-        <title>PizzaNyt - Pääsivu</title>
-        <meta name="viewport" content ="width-device-width, initial-scale=1.0"> <!-- Puhelimen koko-->
-        <link rel="icon" type="image/x-icon" href="/images/WebsiteLogo.png">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Alyamama:wght@300..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href ="styles.css">
-    </head>
-    <body>
-        <nav class="navbar">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="images/Logo.png" alt="PizzaNyt" class="logo-img">
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>PizzaNyt - Pääsivu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/images/WebsiteLogo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&family=Alyamama:wght@300..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html"><img src="images/Logo.png" alt="PizzaNyt" class="logo-img"></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="selected">Koti</a></li>
+            <li><a href="menu.html">Ruokalista</a></li>
+            <li><a href="pizzacreation.html">Fantasia Pizza</a></li>
+            <li id="nav-login-li"><a href="login.html" class="nav-login-link">Kirjaudu sisään</a></li>
+            <li id="nav-user-info" style="display:none;">
+                <span id="nav-username" class="nav-username"></span>
+                <button id="nav-logout-btn" class="nav-logout-btn">Kirjaudu ulos</button>
+            </li>
+            <li class="cart-container">
+                <a class="cart-link" href="#">
+                    <span class="cart-icon-wrap">
+                        <svg class="cart-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <span class="cart-quantity" id="cart-count">0</span>
+                    </span>
                 </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html" class="selected">Koti</a></li>
-                <li><a href="menu.html">Ruokalista</a></li>
-                <li><a href="contact.html">Ota yhteyttä</a></li>
-                <li class="login-btn" id="nav-login-li"><a href="login.html">Kirjaudu Sisään</a></li>
-                <li id="nav-user-info" style="display:none;">
-                    <span id="nav-username" class="nav-username"></span>
-                    <button id="nav-logout-btn" class="nav-logout-btn">Kirjaudu ulos</button>
-                </li>
-                <li class="cart-container">
-                    <a class="cart-link" href="#">
-                        <div class="cart-wrapper">
-                            <img src="images/cart.png" alt="Ostoskori" class="cart-icon">
-                            <span class="cart-quantity" id="cart-count">0</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    
-        <section class="menu-hero">
-            <div class="menu-hero-content">
-                <span class="menu-label">Keravan paras pizza vuodesta 2026</span>
-                <h1>Koti<span></span></h1>
-                <p>Ravintolan historia ja tyytyväisten asiakkaiden arvostelut.</p>
-            </div>
-            <div class="menu-hero-divider"></div>
-        </section>
+            </li>
+        </ul>
+    </nav>
 
+    <section class="menu-hero">
+        <div class="hero-pizzas">
+            <img src="pizzas/Pepperoni.png" class="hero-pizza" alt="">
+        </div>
+        <div class="menu-hero-content">
+            <span class="menu-label">Keravan paras pizza vuodesta 2026</span>
+            <h1>Koti<span></span></h1>
+            <p>Ravintolan historia ja tyytyväisten asiakkaiden arvostelut.</p>
+        </div>
+        <div class="menu-hero-divider"></div>
+    </section>
 
-       <section class="about">
-         <div class ="about-text">
+    <section class="about">
+        <div class="about-text">
             <h1>Tietoa meistä</h1>
             <p>PizzaNyt perustettiin vuonna 2026 Keravalla.</p>
-
             <p>Tavoitteenamme on nopea kasvu ja laajentuminen.</p>
-
             <p>Pizzojemme laatu on moitteeton; käytämme tuoreimpia raaka-aineita pizzan tuoreuden ja maun säilyttämiseksi.</p>
-
             <p>Asiakaspalvelumme on huippuluokkaa; mukaudumme asiakkaidemme tarpeisiin, kommunikoimme erittäin kohteliaasti ja ytimekkäästi, koska haluamme asiakkaidemme olevan tyytyväisiä jo ennen kuin he maistavat pizzaamme.</p>
-
             <p><strong>PizzaNyt - maku, johon voit luotta.</strong></p>
-           
-
-         </div>
-         <div class="about-image">
+        </div>
+        <div class="about-image">
             <img src="images/chef.png" alt="chef">
-         </div> 
-        
-        </section>
-
-        <div class ="reviews">
-            <h2>Jätä palaute</h2>
-            
-            <input type="email" id="email" placeholder="Syötä sähköposti">
-            
-            <div class="rating">
-                <label>Arvosana:</label>
-                <select id="rating">
-                  
-                  <option value="4">5 ⭐</option>
-                  <option value="4">4 ⭐</option>
-                  <option value="3">3 ⭐</option>
-                  <option value="2">2 ⭐</option>
-                  <option value="1">1 ⭐</option>
-                </select>
-            </div>
-            <textarea id="reviewText" placeholder="Kirjoita palaute..."></textarea>
-            <button onclick="addReview()">Lähetä</button>
-            <h3>Asiakaspalautteet</h3>
-            <div id="reviewList"></div>
         </div>
+    </section>
 
-        
-            <form id="reviewForm">
-                <input type="email" id="remail" placeholder="Sähköposti" required>
-        
-                <select id="rating" required>
-                    <option value="5">5 ⭐</option>
-                    <option value="4">4 ⭐</option>
-                    <option value="3">3 ⭐</option>
-                    <option value="2">2 ⭐</option>
-                    <option value="1">1 ⭐</option>
-                </select>
-        
-                <textarea id="text" placeholder="Kirjoita palautetta..." required></textarea>
-        
-                <button type="submit">Lähetä</button>
-            </form>
-        
-            <div id="reviewsList"></div>
-        </div>
-        
+    <div class="reviews">
+        <h2>Jätä palaute</h2>
+        <form id="reviewForm">
+            <input type="email" id="email" placeholder="Sähköposti" required>
+            <select id="rating" required>
+                <option value="5">5 tähteä</option>
+                <option value="4">4 tähteä</option>
+                <option value="3">3 tähteä</option>
+                <option value="2">2 tähteä</option>
+                <option value="1">1 tähti</option>
+            </select>
+            <textarea id="text" placeholder="Kirjoita palautetta..." required></textarea>
+            <button type="submit">Lähetä</button>
+        </form>
+        <h3>Asiakaspalautteet</h3>
+        <div id="reviewsList"></div>
+    </div>
 
-        <footer class="site-footer">
-            <div class="footer-inner">
-                <img src="images/Logo.png" alt="PizzaNyt" class="footer-logo">
-                <p>© 2026 Pizza Nyt. </p>
-                <p>Aleksis Kiven tie 15, 04200 Kerava</p>
-                <a href="mailto:pizzanyt@gmail.com">pizzanyt@gmail.com</a>
-                <div class="footer-links">
-                    <a href="index.html">Koti</a>
-                    <a href="menu.html">Ruokalista</a>
-                    <a href="contact.html">Ota yhteyttä</a>
-                </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <img src="images/Logo.png" alt="PizzaNyt" class="footer-logo">
+            <p>© 2026 Pizza Nyt.</p>
+            <p>Aleksis Kiven tie 15, 04200 Kerava</p>
+            <a href="mailto:pizzanyt@gmail.com">pizzanyt@gmail.com</a>
+            <div class="footer-links">
+                <a href="index.html">Koti</a>
+                <a href="menu.html">Ruokalista</a>
             </div>
-        </footer>
-    
-        
-        
+        </div>
+    </footer>
 
-
-        <script src ="script.js"></script>
-    </body>
-    
+    <div id="toast" class="toast"></div>
+    <script src="script.js"></script>
+</body>
 </html>

@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartPrices = loadPrices();
     const cartBadges = document.querySelectorAll('.cart-quantity');
     const toast      = document.getElementById('toast');
-    var distance     = 0;
     // Ostoskoripaneeli ja tummennus luodaan tässä, koska ne ei ole oikeesti missään sivussa
     const overlay = document.createElement('div');
     overlay.id = 'cart-overlay';
@@ -156,92 +155,104 @@ document.addEventListener('DOMContentLoaded', () => {
         pickupBtn.addEventListener('click',   () => selectMethod('pickup'));
         deliveryBtn.addEventListener('click', () => selectMethod('delivery'));
 
+        // Laskee etäisyyden ja palauttaa Promisen joka resolvoituu kilometreissä
+        const calculateLengthToAdress = (address) => {
+            const apiKey = '69ae74e043cd5168620268qvma49b6e';
+            const shopAddress = 'Aleksis Kiven tie 15, 04200 Kerava';
+
+            const urlCustomer = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
+            const urlShop = `https://geocode.maps.co/search?q=${encodeURIComponent(shopAddress)}&api_key=${apiKey}`;
+
+            return Promise.all([
+                fetch(urlCustomer).then(r => r.json()),
+                fetch(urlShop).then(r => r.json())
+            ])
+            .then(([customerData, shopData]) => {
+                if (!customerData[0] || !shopData[0]) {
+                    console.error('Osoitetta ei löytynyt');
+                    return null;
+                }
+
+                const lat1 = parseFloat(shopData[0].lat);
+                const lon1 = parseFloat(shopData[0].lon);
+                const lat2 = parseFloat(customerData[0].lat);
+                const lon2 = parseFloat(customerData[0].lon);
+
+                const toRad = d => d * Math.PI / 180;
+                const R = 6371;
+
+                const dLat = toRad(lat2 - lat1);
+                const dLon = toRad(lon2 - lon1);
+
+                const a =
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const dist = R * c;
+
+                console.log('Etäisyys kilometreinä:', dist.toFixed(2));
+                return dist;
+            })
+            .catch(error => {
+                console.error('Virhe kutsussa:', error);
+                return null;
+            });
+        };
+
         confirmBtn.addEventListener('click', () => {
+            if (selectedMethod === 'pickup') {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimitus
+                finaliseOrder(selectedMethod, '', now);
+                return;
+            }
+
             if (selectedMethod === 'delivery') {
                 const addr = document.getElementById('co-address-input').value.trim();
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
-                else {
-                    const calculateLengthToAdress = () => {
-                        const apiKey = '69ae74e043cd5168620268qvma49b6e';
-                        const address = document.getElementById('co-address-input').value.trim();
-                        const shopAddress = 'Aleksis Kiven tie 15, 04200 Kerava';
 
-                        const urlCustomer = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
-                        const urlShop = `https://geocode.maps.co/search?q=${encodeURIComponent(shopAddress)}&api_key=${apiKey}`;
-
-                        Promise.all([
-                            fetch(urlCustomer).then(r => r.json()),
-                            fetch(urlShop).then(r => r.json())
-                        ])
-                        .then(([customerData, shopData]) => {
-                            if (!customerData[0] || !shopData[0]) {
-                                console.error('Osoitetta ei löytynyt');
-                                return;
-                            }
-
-                            const lat1 = parseFloat(shopData[0].lat);
-                            const lon1 = parseFloat(shopData[0].lon);
-                            const lat2 = parseFloat(customerData[0].lat);
-                            const lon2 = parseFloat(customerData[0].lon);
-
-                            const toRad = d => d * Math.PI / 180;
-                            const R = 6371;
-
-                            const dLat = toRad(lat2 - lat1);
-                            const dLon = toRad(lon2 - lon1);
-
-                            const a =
-                                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                                Math.sin(dLon/2) * Math.sin(dLon/2);
-
-                            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                           distance = R * c;
-
-                            console.log('Etäisyys kilometreinä:', distance.toFixed(2));
-                        })
-                        .catch(error => {
-                            console.error('Virhe kutsussa:', error);
-                        });
+                // Etäisyys lasketaan asynkronisesti, jatketaan vasta kun tulos on saatu
+                calculateLengthToAdress(addr).then(distance => {
+                    if (distance === null) {
+                        addressErr.textContent = 'Osoitetta ei löydetty. Tarkista osoite.';
+                        return;
                     }
-                    calculateLengthToAdress();
-                }
-            }
-            const now = new Date();
-            //now.setMinutes(now.getMinutes() + (selectedMethod === 'pickup' ? 20 : 35));
-            switch (selectedMethod) {
-                case ('pickup'):
-                    now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimitus
-                case ('delivery'):
+
                     console.log(distance);
-                    switch (true) {
-                        case (distance.toFixed(2) < 20.0 && distance.toFixed(2) > 10.0):
-                            now.setMinutes(now.getMinutes() + 30); //Pizza normi, ei täytteitä, toimitus
-                            console.log("20min  + 10min");
-                            break;
-                        case (distance.toFixed(2) < 10.0 && distance.toFixed(2) > 3.0):
-                            now.setMinutes(now.getMinutes() + 20); //Pizza normi, ei täytteitä, toimitus
-                            console.log("10min  + 10min");
-                            break;         
-                        case (distance.toFixed(2) < 3.0 && distance.toFixed(2) > 0.0):
-                            now.setMinutes(now.getMinutes() + 15); //Pizza normi, ei täytteitä, toimitus
-                            console.log("5min + 10min");
-                            break;
-                        default:
-                            selectMethod('pickup');
-                            now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimituss
-                            console.log('Emme toimita yli 20 kilomterin päästä pizzeriastamme.');
-                        }
+
+                    if (distance > 20.0) {
+                        // Emme toimita yli 20 kilometrin päästä pizzeriastamme
+                        addressErr.textContent = 'Emme toimita yli 20 km:n päähän. Hae tilaus ravintolasta: Aleksis Kiven tie 15, Kerava.';
+                        console.log('Emme toimita yli 20 kilometrin päästä pizzeriastamme.');
+                        return;
+                    }
+
+                    const now = new Date();
+
+                    if (distance > 10.0) {
+                        now.setMinutes(now.getMinutes() + 30); //Pizza normi, ei täytteitä, toimitus
+                        console.log("20min  + 10min");
+                    } else if (distance > 3.0) {
+                        now.setMinutes(now.getMinutes() + 20); //Pizza normi, ei täytteitä, toimitus
+                        console.log("10min  + 10min");
+                    } else {
+                        now.setMinutes(now.getMinutes() + 15); //Pizza normi, ei täytteitä, toimitus
+                        console.log("5min + 10min");
+                    }
+
+                    finaliseOrder(selectedMethod, addr, now);
+                });
             }
+        });
 
-
-            const timeStr    = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
-            var isDelivery = selectedMethod === 'delivery';
-            var addrVal = isDelivery ? document.getElementById('co-address-input').value.trim() : '';
-            console.log(distance);
+        //Tilaus viimeistely valmis
+        const finaliseOrder = (method, addrVal, now) => {
+            const timeStr  = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
+            const isDelivery = method === 'delivery';
             console.log(addrVal);
 
-            //Tilaus viimeistely valmis
             document.getElementById('co-body').innerHTML = `
                 <div class="co-success">
                     <div class="co-success-icon">✓</div>
@@ -263,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeCart();
 
             document.getElementById('co-done').addEventListener('click', closeCheckoutModal);
-        });
+        };
     };
 
     const openCart  = () => { renderPanel(); panel.style.right = '0px'; overlay.classList.add('active'); };
@@ -361,42 +372,43 @@ document.addEventListener('DOMContentLoaded', () => {
 const form = document.getElementById('reviewForm');
 const reviewsList = document.getElementById('reviewsList');
 
+if (reviewsList) {
+    let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
 
-let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    function displayReviews() {
+        reviewsList.innerHTML = '';
+        reviews.slice().reverse().forEach(review => {
+            const reviewDiv = document.createElement('div');
+            reviewDiv.classList.add('review-card');
+            reviewDiv.innerHTML = `
+              <div class="review-header">
+                <div class="review-email">${review.email}</div>
+                <div class="review-rating">${'★'.repeat(review.rating)}</div>
+              </div>
+              <div class="review-text">${review.text}</div>
+            `;
+            reviewsList.appendChild(reviewDiv);
+        });
+    }
 
-function displayReviews() {
-  reviewsList.innerHTML = '';
-  reviews.slice().reverse().forEach(review => {
-    const reviewDiv = document.createElement('div');
-    reviewDiv.classList.add('review');
-    reviewDiv.innerHTML = `
-      <div class="review-email">${review.email}</div>
-      <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
-      <div class="review-text">${review.text}</div>
-    `;
-    reviewsList.appendChild(reviewDiv);
-  });
+    displayReviews();
+
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const rating = parseInt(document.getElementById('rating').value);
+            const text = document.getElementById('text').value;
+
+            const newReview = { email, rating, text };
+
+            reviews.push(newReview);
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+
+            displayReviews();
+
+            form.reset();
+        });
+    }
 }
-
-
-displayReviews();
-
-form.addEventListener('addReview', function(event) {
-  event.preventDefault();
-
-  const email = document.getElementById('email').value;
-  const rating = parseInt(document.getElementById('rating').value);
-  const text = document.getElementById('text').value;
-
-  const newReview = { email, rating, text };
-  
-  
-  reviews.push(newReview);
-  localStorage.setItem('reviews', JSON.stringify(reviews));
-
-  
-  displayReviews();
-
-  
-  form.reset();
-});
