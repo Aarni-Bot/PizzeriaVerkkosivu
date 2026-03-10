@@ -357,50 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // Palautteet näytetään ja toimintaan
-const form = document.getElementById("reviewForm");
-const reviewsList = document.getElementById("reviewsList");
 
-let reviews = JSON.parse(localStorage.getItem("reviews")) || [];
-
-function showReviews() {
-
-    reviewsList.innerHTML = "";
-
-    reviews.forEach(r => {
-
-        const div = document.createElement("div");
-
-        div.innerHTML = `
-        <strong>${r.email}</strong>
-        <p>Arvosana: ${r.rating}</p>
-        <p>${r.text}</p>
-        `;
-
-        reviewsList.appendChild(div);
-
-    });
-}
-
-form.addEventListener("submit", function(e){
-
-    e.preventDefault();
-
-    const review = {
-        email: document.getElementById("remail").value,
-        rating: document.getElementById("rating").value,
-        text: document.getElementById("text").value
-    };
-
-    reviews.push(review);
-
-    localStorage.setItem("reviews", JSON.stringify(reviews));
-
-    showReviews();
-
-    form.reset();
-});
-
-showReviews();
 const form = document.getElementById('reviewForm');
 const reviewsList = document.getElementById('reviewsList');
 
