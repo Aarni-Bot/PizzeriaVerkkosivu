@@ -115,11 +115,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="co-delivery-options">
                     <button class="co-option-btn" id="co-pickup">
                         <span class="co-option-title">Nouto</span>
-                        <span class="co-option-sub">Valmis ~10 min</span>
+                        <span class="co-option-sub">Aleksis Kiven tie 15, 04200 Kerava</span>
                     </button>
                     <button class="co-option-btn" id="co-delivery">
                         <span class="co-option-title">Kuljetus</span>
-                        <span class="co-option-sub">Ilmainen · ~35 min</span>
+                        <span class="co-option-sub">Toimitus mahdollinen 20km säteellä</span>
                     </button>
                 </div>
                 <div class="co-address-wrap" id="co-address-wrap" style="display:none;">
