@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const CART_KEY  = 'pizzanyt_cart';
     const loadCart  = () => { try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; } catch { return {}; } };
     const saveCart  = (c) => localStorage.setItem(CART_KEY, JSON.stringify(c));
-    const PRICES_KEY = 'pizzanyt_prices';
+    var PRICES_KEY = 'pizzanyt_prices';
     const loadPrices = () => { try { return JSON.parse(localStorage.getItem(PRICES_KEY)) || {}; } catch { return {}; } };
     const savePrices = (p) => localStorage.setItem(PRICES_KEY, JSON.stringify(p));
-    const cart       = loadCart();
-    const cartPrices = loadPrices();
+    let cart       = loadCart();
+    let cartPrices = loadPrices();
     const cartBadges = document.querySelectorAll('.cart-quantity');
     const toast      = document.getElementById('toast');
     // Ostoskoripaneeli ja tummennus luodaan tässä, koska ne ei ole oikeesti missään sivussa
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ostoskorissa olevien pizzojen määrä
     const updateCount = () => {
+        cart = loadCart(); 
         const total = Object.values(cart).reduce((s, v) => s + v, 0);
         cartBadges.forEach(el => el.textContent = total);
     };
@@ -39,8 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //Ostoskori paneelin sisältö
     const renderPanel = () => {
+        cart = loadCart();
+        cartPrices = loadPrices();
         const items = Object.entries(cart);
-        const total = items.reduce((s, [, q]) => s + q, 0);
+        const totalItems = items.reduce((s, [, q]) => s + q, 0);
+        
         panel.innerHTML = `
             <div class="cart-header">
                 <h2>Ostoskori</h2>
@@ -61,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             ${items.length > 0 ? `
             <div class="cart-footer">
-                <div class="cart-total"><span>Yhteensä (kpl)</span><span>${total} kpl</span></div>
+                <div class="cart-total"><span>Yhteensä (kpl)</span><span>${totalItems} kpl</span></div>
                 <div class="cart-total"><span>Yhteensä (€)</span><span>${items.reduce((s,[n,q])=>s+(cartPrices[n]||0)*q,0).toFixed(2).replace('.',',')} €</span></div>
                 <button class="checkout-btn">Tilaa nyt</button>
             </div>` : ''}
@@ -157,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Laskee etäisyyden ja palauttaa Promisen joka resolvoituu kilometreissä
         const calculateLengthToAdress = (address) => {
-            const apiKey = '69ae74e043cd5168620268qvma49b6e';
+            const apiKey = '69ae74e043cd5168620268qvma49b6e'; //geocode.mapsia varten
             const shopAddress = 'Aleksis Kiven tie 15, 04200 Kerava';
 
             const urlCustomer = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
@@ -179,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lon2 = parseFloat(customerData[0].lon);
 
                 const toRad = d => d * Math.PI / 180;
-                const R = 6371;
+                const R = 6371; //kilometreissä maapallon
 
                 const dLat = toRad(lat2 - lat1);
                 const dLon = toRad(lon2 - lon1);
@@ -202,46 +206,56 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         confirmBtn.addEventListener('click', () => {
+
+            // Tarkistus jos on gluteeniton
+            const glutenFree = Object.keys(cart).some(name => name.includes("Gluteeniton"));
+        
             if (selectedMethod === 'pickup') {
                 const now = new Date();
-                now.setMinutes(now.getMinutes() + 10); //NORMAALI PIZZA, EI TÄYTTEITÄ ja ei toimitus
+        
+                let prepTime = 10; // Normaali pizza aika
+                if (glutenFree) prepTime += 3; // +3 min jos gluteeniton
+        
+                now.setMinutes(now.getMinutes() + prepTime);
                 finaliseOrder(selectedMethod, '', now);
                 return;
             }
-
+        
             if (selectedMethod === 'delivery') {
                 const addr = document.getElementById('co-address-input').value.trim();
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
-
-                // Etäisyys lasketaan asynkronisesti, jatketaan vasta kun tulos on saatu
+        
                 calculateLengthToAdress(addr).then(distance => {
                     if (distance === null) {
                         addressErr.textContent = 'Osoitetta ei löydetty. Tarkista osoite.';
                         return;
                     }
-
+        
                     console.log(distance);
-
+        
                     if (distance > 20.0) {
-                        // Emme toimita yli 20 kilometrin päästä pizzeriastamme
                         addressErr.textContent = 'Emme toimita yli 20 km:n päähän. Hae tilaus ravintolasta: Aleksis Kiven tie 15, Kerava.';
-                        console.log('Emme toimita yli 20 kilometrin päästä pizzeriastamme.');
                         return;
                     }
-
+        
                     const now = new Date();
-
+                    let prepTime;
+        
                     if (distance > 10.0) {
-                        now.setMinutes(now.getMinutes() + 30); //Pizza normi, ei täytteitä, toimitus
-                        console.log("20min  + 10min");
+                        prepTime = 30;
+                        console.log("20min + 10min");
                     } else if (distance > 3.0) {
-                        now.setMinutes(now.getMinutes() + 20); //Pizza normi, ei täytteitä, toimitus
-                        console.log("10min  + 10min");
+                        prepTime = 20;
+                        console.log("10min + 10min");
                     } else {
-                        now.setMinutes(now.getMinutes() + 15); //Pizza normi, ei täytteitä, toimitus
+                        prepTime = 15;
                         console.log("5min + 10min");
                     }
-
+        
+                    if (glutenFree) prepTime += 3; // +3 min jos gluteeniton
+        
+                    now.setMinutes(now.getMinutes() + prepTime);
+        
                     finaliseOrder(selectedMethod, addr, now);
                 });
             }
@@ -299,39 +313,46 @@ document.addEventListener('DOMContentLoaded', () => {
         const incBtn    = card.querySelector('.increase');
         const orderBtn  = card.querySelector('.order-btn');
         if (!qtyInput || !orderBtn) return;
-        const name = card.querySelector('h3').textContent.trim();
-
+    
         if (decBtn) decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
         if (incBtn) incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
-
+    
         qtyInput.addEventListener('input', () => {
             const v = parseInt(qtyInput.value);
-            if (v > 99)            qtyInput.value = 99;
+            if (v > 99) qtyInput.value = 99;
             if (v < 1 || isNaN(v)) qtyInput.value = 1;
         });
-
-        //ku lisäät koriin pizzan
-        const priceEl  = card.querySelector('.pizza-price');
-        const priceNum = parseFloat((priceEl ? priceEl.textContent : '').replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
+    
         orderBtn.addEventListener('click', () => {
+            const name = card.querySelector('h3').textContent.trim();
+            const priceEl = card.querySelector('.pizza-price');
+            const priceNum = parseFloat(priceEl.textContent.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
+    
             if (orderBtn.dataset.busy) return;
             orderBtn.dataset.busy = '1';
+    
             const qty = parseInt(qtyInput.value) || 1;
+    
             cart[name] = (cart[name] || 0) + qty;
-            if (priceNum > 0) cartPrices[name] = priceNum;
+            cartPrices[name] = priceNum;
+    
             saveCart(cart);
             savePrices(cartPrices);
             updateCount();
+    
             qtyInput.value = 1;
+    
             showToast(qty + 'x ' + name + ' lisätty koriin!');
+    
             const origText = orderBtn.textContent;
-            orderBtn.textContent      = 'Lisätty!';
+            orderBtn.textContent = 'Lisätty!';
             orderBtn.style.background = '#27ae60';
-            orderBtn.style.color      = '#fff';
+            orderBtn.style.color = '#fff';
+    
             setTimeout(() => {
-                orderBtn.textContent      = origText;
+                orderBtn.textContent = origText;
                 orderBtn.style.background = '';
-                orderBtn.style.color      = '';
+                orderBtn.style.color = '';
                 delete orderBtn.dataset.busy;
             }, 1500);
         });
@@ -367,7 +388,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-// Palautteet näytetään ja toimintaan
+
+const checkboxes = document.querySelectorAll('input[name="gluteeniton"]');
+
+checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', (event) => {
+        const pizzaCard = event.target.closest('.pizza-card');
+        if (!pizzaCard) return;
+
+        const nameElement = pizzaCard.querySelector('h3');
+        const priceElement = pizzaCard.querySelector('.pizza-footer .pizza-price');
+
+        if (!nameElement.dataset.originalName) {
+            nameElement.dataset.originalName = nameElement.innerText;
+        }
+        if (!priceElement.dataset.originalPrice) {
+            priceElement.dataset.originalPrice = priceElement.innerText.replace(/[^0-9.,]/g, "").replace(',', '.');
+        }
+
+        const originalName = nameElement.dataset.originalName;
+        const originalPrice = parseFloat(priceElement.dataset.originalPrice);
+
+        if (event.target.checked) {
+            nameElement.innerText = "Gluteeniton " + originalName;
+            priceElement.innerText = (originalPrice + 2.0).toFixed(2) + " €";
+        } else {
+            nameElement.innerText = originalName;
+            priceElement.innerText = originalPrice.toFixed(2) + " €";
+        }
+    });
+});
+
 
 const form = document.getElementById('reviewForm');
 const reviewsList = document.getElementById('reviewsList');
