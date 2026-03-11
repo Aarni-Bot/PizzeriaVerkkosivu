@@ -291,6 +291,68 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
+
+// Fantasia pizza
+const fantasiaBtn = document.querySelector('.sbmit');
+
+if (fantasiaBtn) {
+    fantasiaBtn.addEventListener('click', () => {
+
+        const pohja = document.querySelector('input[name="pohja"]:checked');
+        const kastike = document.querySelector('input[name="kastike"]:checked');
+        const taytteet = document.querySelectorAll('input[name="täyte"]:checked');
+
+        if (!pohja || !kastike) {
+            showToast("Valitse pohja ja kastike!");
+            return;
+        }
+
+        let name = "Fantasia Pizza";
+
+        // pohja
+        let pohjaText = pohja.parentElement.innerText.trim();
+        if (pohjaText.includes("Gluteeniton")) {
+            name = "Gluteeniton " + name;
+        }
+
+        // kastike
+        const kastikeText = kastike.parentElement.innerText.trim();
+
+        // täytteet
+        const tayteList = [];
+        taytteet.forEach(t => {
+            tayteList.push(t.parentElement.innerText.trim());
+        });
+
+        if (tayteList.length === 0) {
+            showToast("Valitse ainakin yksi täyte!");
+            return;
+        }
+
+        // nimi koriin
+        const fullName = name + " (" + kastikeText + ", " + tayteList.join(", ") + ")";
+
+        // hinnan lasku
+        let price = 12; // peruspizza
+        price += tayteList.length * 1; // 1€ per täyte
+
+        if (pohjaText.includes("Gluteeniton")) {
+            price += 2;
+        }
+
+        // lisää koriin
+        cart[fullName] = (cart[fullName] || 0) + 1;
+        cartPrices[fullName] = price;
+
+        saveCart(cart);
+        savePrices(cartPrices);
+        updateCount();
+
+        showToast(fullName + " lisätty koriin!");
+
+    });
+}
+
     const openCart  = () => { renderPanel(); panel.style.right = '0px'; overlay.classList.add('active'); };
     const closeCart = () => { panel.style.right = '-420px'; overlay.classList.remove('active'); };
 

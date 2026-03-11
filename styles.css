@@ -688,7 +688,6 @@ input[type=number] { -moz-appearance: textfield; }
 .auth-switch a { color: var(--dark); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .auth-switch a:hover { color: var(--gold-dim); }
 
-/* Checkout modal */
 #checkout-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; backdrop-filter:blur(3px); }
 #checkout-modal-overlay.active { display:block; }
 
