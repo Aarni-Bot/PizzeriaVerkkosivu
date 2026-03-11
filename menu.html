@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Nyt - Ruokalista</title>
+    <title>Pizza Nyt - Pizzat</title>
     <link rel="icon" type="image/x-icon" href="/images/WebsiteLogo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
         </div>
         <ul class="nav-links">
             <li><a href="index.html">Koti</a></li>
-            <li><a href="menu.html" class="selected">Ruokalista</a></li>
+            <li><a href="menu.html" class="selected">Pizzat</a></li>
             <li><a href="pizzacreation.html">Fantasia Pizza</a></li>
             <li id="nav-login-li"><a href="login.html" class="nav-login-link">Kirjaudu sisään</a></li>
             <li id="nav-user-info" style="display:none;">
@@ -40,7 +40,7 @@
             <img src="pizzas/MeatLovers.png" class="hero-pizza" alt="">
         </div>
             <span class="menu-label">Keravan paras pizza</span>
-            <h1>Ruoka<span>lista</span></h1>
+            <h1>Piz<span>zat</span></h1>
             <p>Käsintehdyt pizzat parhaista raaka-aineista, suoraan uunista sinulle.</p>
         </div>
         <div class="menu-hero-divider"></div>
@@ -87,6 +87,11 @@
                             <input type="number" class="pizza-quantity" min="1" max="99" value="1">
                             <button class="increase">+</button>
                         </div>
+                        <br>
+                        <label>
+                            <input type="checkbox" name="gluteeniton" value="false">
+                            gluteeniton
+                        </label>
                     </div>
                     <button class="order-btn">Lisää koriin</button>
                 </div>
