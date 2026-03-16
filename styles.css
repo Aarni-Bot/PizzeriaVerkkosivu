@@ -409,7 +409,7 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
     margin:auto;
     padding: 25px;
     border-radius: 15px;
-    font-family: 'Bebas Neue' sans-serif;
+    font-family: 'A' sans-serif;
 }
 .container h3 {
     color:#cc8800;
@@ -434,6 +434,23 @@ body { font-family: 'Nunito', sans-serif; background: #f8f7f4; color: var(--dark
 }
 .container button:hover {
     background: var(--gold); color: #000;
+}
+select.täyte {
+    width: 140px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+select.täyte:hover {
+    border-color: #e67e22;
+}
+input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #e67e22; 
 }
 
 /* Ostoskori paneeli */
