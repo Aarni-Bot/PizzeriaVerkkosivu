@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let cartPrices = loadPrices();
     const cartBadges = document.querySelectorAll('.cart-quantity');
     const toast      = document.getElementById('toast');
-    // Ostoskoripaneeli ja tummennus luodaan tässä, koska ne ei ole oikeesti missään sivussa
     const overlay = document.createElement('div');
     overlay.id = 'cart-overlay';
     document.body.appendChild(overlay);
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.id = 'cart-panel';
     document.body.appendChild(panel);
 
-    //Ilmoitus joka pongahtaa ylös
     let toastTimer;
     const showToast = (msg) => {
         if (!toast) return;
@@ -27,24 +25,97 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
     };
-    //globaaliksi aliohjelmaksi, jotta login.html:än sisäinen js voi kutsua tätä
     window.showToastGlobal = showToast;
 
-    // Ostoskorissa olevien pizzojen määrä
     const updateCount = () => {
-        cart = loadCart(); 
+        cart = loadCart();
         const total = Object.values(cart).reduce((s, v) => s + v, 0);
         cartBadges.forEach(el => el.textContent = total);
     };
 
+    const FANTASIA_PREFIX = '__fantasia__';
+    const PIZZA_PREFIX    = '__pizza__';
 
-    //Ostoskori paneelin sisältö
+    const renderCartItem = (name, qty) => {
+        const price = cartPrices[name] || 0;
+        const lineTotal = (price * qty).toFixed(2).replace('.', ',');
+
+        if (name.startsWith(FANTASIA_PREFIX)) {
+            try {
+                const data = JSON.parse(name.slice(FANTASIA_PREFIX.length));
+                const isGluten = data.pohja === 'Gluteeniton';
+                const badges = [];
+                if (data.koko === 'Iso') badges.push({ text: 'Iso', cls: 'fb-size' });
+                if (isGluten) badges.push({ text: 'Gluteeniton', cls: 'fb-gluten' });
+                badges.push({ text: data.kastike, cls: 'fb-sauce' });
+                if (data.taytteet && data.taytteet.length) {
+                    data.taytteet.forEach(t => badges.push({ text: t, cls: 'fb-topping' }));
+                }
+                const label = 'Fantasia Pizza' + (data.koko === 'Iso' ? ' (Iso)' : '');
+                return `
+                    <div class="cart-item fantasia-cart-item">
+                        <div class="fantasia-cart-top">
+                            <span class="cart-item-name">${label}</span>
+                            <div class="cart-item-controls">
+                                <button class="edit-qty" data-name="${name.replace(/"/g,'&quot;')}" data-change="-1">&#8722;</button>
+                                <span class="cart-item-qty">${qty}</span>
+                                <button class="edit-qty" data-name="${name.replace(/"/g,'&quot;')}" data-change="1">+</button>
+                            </div>
+                        </div>
+                        <div class="fantasia-badges">
+                            ${badges.map(b => `<span class="fantasia-badge ${b.cls}">${b.text}</span>`).join('')}
+                        </div>
+                        <div class="cart-item-price">${lineTotal} €</div>
+                    </div>`;
+            } catch(e) { }
+        }
+
+        if (name.startsWith(PIZZA_PREFIX)) {
+            try {
+                const data = JSON.parse(name.slice(PIZZA_PREFIX.length));
+                const badges = [];
+                if (data.koko === 'Iso') badges.push({ text: 'Iso', cls: 'fb-size' });
+                if (data.gluteeniton) badges.push({ text: 'Gluteeniton', cls: 'fb-gluten' });
+                if (data.extras && data.extras.length) {
+                    data.extras.forEach(e => badges.push({ text: e, cls: 'fb-topping' }));
+                }
+                const displayName = data.base + (data.koko === 'Iso' ? ' (Iso)' : '');
+                return `
+                    <div class="cart-item fantasia-cart-item">
+                        <div class="fantasia-cart-top">
+                            <span class="cart-item-name">${displayName}</span>
+                            <div class="cart-item-controls">
+                                <button class="edit-qty" data-name="${name.replace(/"/g,'&quot;')}" data-change="-1">&#8722;</button>
+                                <span class="cart-item-qty">${qty}</span>
+                                <button class="edit-qty" data-name="${name.replace(/"/g,'&quot;')}" data-change="1">+</button>
+                            </div>
+                        </div>
+                        ${badges.length > 0 ? `<div class="fantasia-badges">${badges.map(b => `<span class="fantasia-badge ${b.cls}">${b.text}</span>`).join('')}</div>` : ''}
+                        <div class="cart-item-price">${lineTotal} €</div>
+                    </div>`;
+            } catch(e) { }
+        }
+
+        return `
+            <div class="cart-item">
+                <span class="cart-item-name">${name}</span>
+                <div class="cart-item-controls">
+                    <button class="edit-qty" data-name="${name.replace(/"/g,'&quot;')}" data-change="-1">&#8722;</button>
+                    <span class="cart-item-qty">${qty}</span>
+                    <button class="edit-qty" data-name="${name.replace(/"/g,'&quot;')}" data-change="1">+</button>
+                </div>
+                <div class="cart-item-price">${lineTotal} €</div>
+            </div>`;
+    };
+
     const renderPanel = () => {
         cart = loadCart();
         cartPrices = loadPrices();
         const items = Object.entries(cart);
         const totalItems = items.reduce((s, [, q]) => s + q, 0);
-        
+
+        const itemsHtml = items.map(([name, qty]) => renderCartItem(name, qty)).join('');
+
         panel.innerHTML = `
             <div class="cart-header">
                 <h2>Ostoskori</h2>
@@ -53,15 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="cart-body">
                 ${items.length === 0
                     ? '<div class="cart-empty"><p>Korisi on tyhjä.<br>Lisää herkullisia pizzoja!</p></div>'
-                    : items.map(([name, qty]) => `
-                        <div class="cart-item">
-                            <span class="cart-item-name">${name}</span>
-                            <div class="cart-item-controls">
-                                <button class="edit-qty" data-name="${name}" data-change="-1">&#8722;</button>
-                                <span class="cart-item-qty">${qty}</span>
-                                <button class="edit-qty" data-name="${name}" data-change="1">+</button>
-                            </div>
-                        </div>`).join('')}
+                    : itemsHtml}
             </div>
             ${items.length > 0 ? `
             <div class="cart-footer">
@@ -73,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('close-cart').onclick = closeCart;
 
-        // Muutos napit korissa ostoskori paneelissa
         panel.querySelectorAll('.edit-qty').forEach(btn => {
             btn.addEventListener('click', () => {
                 const name   = btn.dataset.name;
@@ -86,10 +148,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Ei yhdistä mihinkään tekee vaan viestin että voi näyttää että toimii
         const checkoutBtn = panel.querySelector('.checkout-btn');
         if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', () => openCheckoutModal());
+            checkoutBtn.addEventListener('click', () => {
+                const loggedIn = localStorage.getItem('pizzanyt_loggedin');
+                if (!loggedIn) {
+                    panel.querySelector('.cart-footer').insertAdjacentHTML('afterbegin',
+                        '<div class="cart-login-notice">Sinun täytyy <a href="login.html">kirjautua sisään</a> tilataksesi.</div>'
+                    );
+                    return;
+                }
+                openCheckoutModal();
+            });
         }
     };
 
@@ -104,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeCheckoutModal = () => { coModal.classList.remove('active'); coOverlay.classList.remove('active'); };
     coOverlay.addEventListener('click', closeCheckoutModal);
 
-    //Tilaus viimeistely 
     const openCheckoutModal = () => {
         const totalEur = Object.entries(cart)
             .reduce((s, [name, qty]) => s + (cartPrices[name] || 0) * qty, 0)
@@ -159,9 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pickupBtn.addEventListener('click',   () => selectMethod('pickup'));
         deliveryBtn.addEventListener('click', () => selectMethod('delivery'));
 
-        // Laskee etäisyyden ja palauttaa Promisen joka resolvoituu kilometreissä
         const calculateLengthToAdress = (address) => {
-            const apiKey = '69ae74e043cd5168620268qvma49b6e'; //geocode.mapsia varten
+            const apiKey = '69ae74e043cd5168620268qvma49b6e';
             const shopAddress = 'Aleksis Kiven tie 15, 04200 Kerava';
 
             const urlCustomer = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
@@ -183,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lon2 = parseFloat(customerData[0].lon);
 
                 const toRad = d => d * Math.PI / 180;
-                const R = 6371; //kilometreissä maapallon
+                const R = 6371;
 
                 const dLat = toRad(lat2 - lat1);
                 const dLon = toRad(lon2 - lon1);
@@ -206,68 +274,81 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         confirmBtn.addEventListener('click', () => {
-            // 1. Laske tuotteiden kokonaismäärä (oletetaan että cart on { "Pizza": 2 })
-            const amounts = Object.values(cart);
-            const totalAmount = amounts.reduce((sum, val) => sum + val, 0);
-        
-            // 2. Tarkista gluteenittomuus
-            const glutenFree = Object.keys(cart).some(name => name.includes("Gluteeniton"));
-        
+            const glutenFree = Object.keys(cart).some(name => {
+                if (name.startsWith(FANTASIA_PREFIX)) {
+                    try { return JSON.parse(name.slice(FANTASIA_PREFIX.length)).pohja === 'Gluteeniton'; } catch(e) { return false; }
+                }
+                if (name.startsWith(PIZZA_PREFIX)) {
+                    try { return JSON.parse(name.slice(PIZZA_PREFIX.length)).gluteeniton === true; } catch(e) { return false; }
+                }
+                return name.includes("Gluteeniton");
+            });
+
+            let ingredientMinutes = 0;
+            let pizzaCount = 0;
+            Object.entries(cart).forEach(([name, qty]) => {
+                pizzaCount += qty;
+                let ingredients = 0;
+                if (name.startsWith(FANTASIA_PREFIX)) {
+                    try {
+                        const d = JSON.parse(name.slice(FANTASIA_PREFIX.length));
+                        ingredients = d.taytteet ? d.taytteet.length : 0;
+                    } catch(e) {}
+                } else if (name.startsWith(PIZZA_PREFIX)) {
+                    try {
+                        const d = JSON.parse(name.slice(PIZZA_PREFIX.length));
+                        ingredients = d.extras ? d.extras.length : 0;
+                    } catch(e) {}
+                }
+                ingredientMinutes += ingredients * qty;
+            });
+
+            const basePrepTime = (10 * pizzaCount) + ingredientMinutes + (glutenFree ? 3 : 0);
+
             if (selectedMethod === 'pickup') {
                 const now = new Date();
-                
-                // 3. Käytä laskettua määrää (totalAmount)
-                let prepTime = 10 * totalAmount; 
-                
-                if (glutenFree) prepTime += 3;
-                
-                now.setMinutes(now.getMinutes() + prepTime);
+                now.setMinutes(now.getMinutes() + basePrepTime);
                 finaliseOrder(selectedMethod, '', now);
                 return;
             }
             if (selectedMethod === 'delivery') {
                 const addr = document.getElementById('co-address-input').value.trim();
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
-        
+
                 calculateLengthToAdress(addr).then(distance => {
                     if (distance === null) {
                         addressErr.textContent = 'Osoitetta ei löydetty. Tarkista osoite.';
                         return;
                     }
-        
+
                     console.log(distance);
-        
+
                     if (distance > 20.0) {
                         addressErr.textContent = 'Emme toimita yli 20 km:n päähän. Hae tilaus ravintolasta: Aleksis Kiven tie 15, Kerava.';
                         return;
                     }
-        
+
                     const now = new Date();
-                    let prepTime;
-        
+                    let deliveryExtra;
+
                     if (distance > 10.0) {
-                        prepTime = 30;
-                        console.log("20min + 10min");
+                        deliveryExtra = 20;
+                        console.log("20min delivery extra");
                     } else if (distance > 3.0) {
-                        prepTime = 20;
-                        console.log("10min + 10min");
+                        deliveryExtra = 10;
+                        console.log("10min delivery extra");
                     } else {
-                        prepTime = 15;
-                        console.log("5min + 10min");
+                        deliveryExtra = 5;
+                        console.log("5min delivery extra");
                     }
-        
-                    if (glutenFree) prepTime += 3; // +3 min jos gluteeniton
-        
-                    now.setMinutes(now.getMinutes() + prepTime);
-        
+
+                    now.setMinutes(now.getMinutes() + basePrepTime + deliveryExtra);
+
                     finaliseOrder(selectedMethod, addr, now);
                 });
             }
         });
 
-
-
-        //Tilaus viimeistely valmis
         const finaliseOrder = (method, addrVal, now) => {
             const timeStr  = now.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
             const isDelivery = method === 'delivery';
@@ -297,67 +378,64 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
+    const fantasiaBtn = document.querySelector('.sbmit');
 
-// Fantasia pizza
-const fantasiaBtn = document.querySelector('.sbmit');
+    if (fantasiaBtn) {
+        fantasiaBtn.addEventListener('click', () => {
 
-if (fantasiaBtn) {
-    fantasiaBtn.addEventListener('click', () => {
+            const kokoEl    = document.querySelector('input[name="fantasiakoko"]:checked');
+            const pohjaEl   = document.querySelector('input[name="pohja"]:checked');
+            const kastikeEl = document.querySelector('input[name="kastike"]:checked');
 
-        const pohja = document.querySelector('input[name="pohja"]:checked');
-        const kastike = document.querySelector('input[name="kastike"]:checked');
-        const taytteet = document.querySelectorAll('input[name="täyte"]:checked');
+            if (!kokoEl || !pohjaEl || !kastikeEl) {
+                showToast("Valitse koko, pohja ja kastike!");
+                return;
+            }
 
-        if (!pohja || !kastike) {
-            showToast("Valitse pohja ja kastike!");
-            return;
-        }
+            const kokoText    = kokoEl.parentElement.innerText.trim();
+            const pohjaText   = pohjaEl.parentElement.innerText.trim();
+            const kastikeText = kastikeEl.parentElement.innerText.trim();
 
-        let name = "Fantasia Pizza";
+            const selectedTaytteet = [];
+            document.querySelectorAll('select.täyte').forEach(sel => {
+                if (parseInt(sel.value) > 0) {
+                    const amount = parseInt(sel.value) === 2 ? ' x2' : '';
+                    selectedTaytteet.push(sel.dataset.name + amount);
+                }
+            });
 
-        // pohja
-        let pohjaText = pohja.parentElement.innerText.trim();
-        if (pohjaText.includes("Gluteeniton")) {
-            name = "Gluteeniton " + name;
-        }
+            if (selectedTaytteet.length === 0) {
+                showToast("Valitse ainakin yksi täyte!");
+                return;
+            }
 
-        // kastike
-        const kastikeText = kastike.parentElement.innerText.trim();
+            const isGluten = pohjaText.includes("Gluteeniton");
+            const isIso    = kokoText.includes("Iso");
 
-        // täytteet
-        const tayteList = [];
-        taytteet.forEach(t => {
-            tayteList.push(t.parentElement.innerText.trim());
+            const data = {
+                koko:     isIso ? 'Iso' : 'Normaali',
+                pohja:    isGluten ? 'Gluteeniton' : 'Normaali',
+                kastike:  kastikeText,
+                taytteet: selectedTaytteet
+            };
+
+            const cartKey = FANTASIA_PREFIX + JSON.stringify(data);
+
+            let price = isIso ? 14.90 : 11.90;
+            selectedTaytteet.forEach(t => { price += t.includes('x2') ? 2.0 : 1.0; });
+            if (isGluten) price += 2.0;
+
+            cart[cartKey] = (cart[cartKey] || 0) + 1;
+            cartPrices[cartKey] = price;
+
+            saveCart(cart);
+            savePrices(cartPrices);
+            updateCount();
+
+            const label = (isGluten ? 'Gluteeniton ' : '') + 'Fantasia Pizza' + (isIso ? ' (Iso)' : '');
+            showToast(label + ' lisätty koriin!');
         });
-
-        if (tayteList.length === 0) {
-            showToast("Valitse ainakin yksi täyte!");
-            return;
-        }
-
-        // nimi koriin
-        const fullName = name + " (" + kastikeText + ", " + tayteList.join(", ") + ")";
-
-        // hinnan lasku
-        let price = 12; // peruspizza
-        price += tayteList.length * 1; // 1€ per täyte
-
-        if (pohjaText.includes("Gluteeniton")) {
-            price += 2;
-        }
-
-        // lisää koriin
-        cart[fullName] = (cart[fullName] || 0) + 1;
-        cartPrices[fullName] = price;
-
-        saveCart(cart);
-        savePrices(cartPrices);
-        updateCount();
-
-        showToast(fullName + " lisätty koriin!");
-
-    });
-}
+    }
 
     const openCart  = () => { renderPanel(); panel.style.right = '0px'; overlay.classList.add('active'); };
     const closeCart = () => { panel.style.right = '-420px'; overlay.classList.remove('active'); };
@@ -367,14 +445,23 @@ if (fantasiaBtn) {
     );
     overlay.addEventListener('click', closeCart);
 
-    // halusin lisää silleen että kun oot kirjautunut niin se palaa sille sivulle jossa olit joten tässä tallennetaan nykyinen sivu sinne paluuta varten
     document.querySelectorAll('a[href="login.html"]').forEach(link => {
         link.addEventListener('click', () => {
             localStorage.setItem('pizzanyt_paluusivu', window.location.href);
         });
     });
 
-    //ruokalistan pizza kortit
+    document.querySelectorAll('.extras-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const info     = btn.closest('.pizza-info');
+            const extPanel = info.querySelector('.extras-panel');
+            const isOpen   = extPanel.style.display !== 'none';
+            extPanel.style.display = isOpen ? 'none' : 'block';
+            btn.textContent = isOpen ? '+ Lisää täytteitä' : '− Piilota täytteet';
+            btn.classList.toggle('extras-toggle-btn--open', !isOpen);
+        });
+    });
+
     document.querySelectorAll('.pizza-card').forEach(card => {
         const qtyInput  = card.querySelector('.pizza-quantity');
         const decBtn    = card.querySelector('.decrease');
@@ -384,39 +471,87 @@ if (fantasiaBtn) {
 
         if (decBtn) decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
         if (incBtn) incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
-    
+
         qtyInput.addEventListener('input', () => {
             const v = parseInt(qtyInput.value);
             if (v > 99) qtyInput.value = 99;
             if (v < 1 || isNaN(v)) qtyInput.value = 1;
         });
-    
+
         orderBtn.addEventListener('click', () => {
-            const name = card.querySelector('h3').textContent.trim();
-            const priceEl = card.querySelector('.pizza-price');
-            const priceNum = parseFloat(priceEl.textContent.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
-    
             if (orderBtn.dataset.busy) return;
+
+            const sizeChips    = card.querySelectorAll('.size-chip');
+            let selectedSize   = 'Normaali';
+            sizeChips.forEach(chip => { if (chip.classList.contains('size-chip--active')) selectedSize = chip.dataset.size; });
+
+            const baseName  = card.querySelector('h3').textContent.trim();
+            const priceEl   = card.querySelector('.pizza-price');
+            const basePrice = parseFloat(priceEl.dataset.basePrice || priceEl.textContent.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
+
+            const glutenCb  = card.querySelector('input[name="gluteeniton"]');
+            const isGluten  = glutenCb && glutenCb.checked;
+
+            const extraBoxes = card.querySelectorAll('.extra-cb:checked');
+            const extraNames = [];
+            let extraPrice   = 0;
+            extraBoxes.forEach(cb => {
+                extraNames.push(cb.dataset.name);
+                extraPrice += parseFloat(cb.dataset.price) || 0;
+            });
+
+            const sizeExtra  = selectedSize === 'Iso' ? 3.0 : 0;
+            const glutenExtra= isGluten ? 2.0 : 0;
+            const totalPrice = basePrice + extraPrice + sizeExtra + glutenExtra;
+
+            const data = {
+                base:        baseName,
+                koko:        selectedSize,
+                gluteeniton: isGluten,
+                extras:      extraNames
+            };
+            const cartKey = PIZZA_PREFIX + JSON.stringify(data);
+
             orderBtn.dataset.busy = '1';
-    
+
             const qty = parseInt(qtyInput.value) || 1;
-    
-            cart[name] = (cart[name] || 0) + qty;
-            cartPrices[name] = priceNum;
-    
+
+            cart[cartKey] = (cart[cartKey] || 0) + qty;
+            cartPrices[cartKey] = totalPrice;
+
             saveCart(cart);
             savePrices(cartPrices);
             updateCount();
-    
+
             qtyInput.value = 1;
-    
-            showToast(qty + 'x ' + name + ' lisätty koriin!');
-    
+
+            extraBoxes.forEach(cb => { cb.checked = false; cb.closest('.extra-chip').classList.remove('extra-chip--checked'); });
+            if (glutenCb) {
+                glutenCb.checked = false;
+                const gc = glutenCb.closest('.gluten-chip');
+                if (gc) gc.classList.remove('gluten-chip--checked');
+            }
+
+            sizeChips.forEach(chip => { chip.classList.toggle('size-chip--active', chip.dataset.size === 'Normaali'); });
+
+            const extrasPanel = card.querySelector('.extras-panel');
+            const toggleBtn   = card.querySelector('.extras-toggle-btn');
+            if (extrasPanel) extrasPanel.style.display = 'none';
+            if (toggleBtn)   { toggleBtn.textContent = '+ Lisää täytteitä'; toggleBtn.classList.remove('extras-toggle-btn--open'); }
+
+            const recalcPrice = () => {
+                priceEl.textContent = basePrice.toFixed(2).replace('.', ',') + ' €';
+            };
+            recalcPrice();
+
+            const displayName = (isGluten ? 'Gluteeniton ' : '') + baseName + (selectedSize === 'Iso' ? ' (Iso)' : '');
+            showToast(qty + 'x ' + displayName + ' lisätty koriin!');
+
             const origText = orderBtn.textContent;
             orderBtn.textContent = 'Lisätty!';
             orderBtn.style.background = '#27ae60';
             orderBtn.style.color = '#fff';
-    
+
             setTimeout(() => {
                 orderBtn.textContent = origText;
                 orderBtn.style.background = '';
@@ -428,7 +563,6 @@ if (fantasiaBtn) {
 
     updateCount();
 
-    //  Kirjautumis paikka navigaatiossa
     const loggedIn   = localStorage.getItem('pizzanyt_loggedin');
     const loginLi    = document.getElementById('nav-login-li');
     const userLi     = document.getElementById('nav-user-info');
@@ -436,19 +570,16 @@ if (fantasiaBtn) {
     const logoutBtn  = document.getElementById('nav-logout-btn');
 
     if (loggedIn) {
-        // Nimi ja uloskirjautumisnappi näkyviin
         if (loginLi)    loginLi.style.display    = 'none';
         if (userLi)     userLi.style.display     = 'flex';
         if (usernameEl) usernameEl.textContent   = loggedIn;
     } else {
-        // kirjaudu-nappi näkyviin
         if (loginLi) loginLi.style.display = '';
         if (userLi)  userLi.style.display  = 'none';
     }
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            // Poistetaan nimi ja muut näkyvistä, mutta pysyy local storagessa
             localStorage.removeItem('pizzanyt_loggedin');
             if (loginLi) loginLi.style.display = '';
             if (userLi)  userLi.style.display  = 'none';
@@ -457,36 +588,48 @@ if (fantasiaBtn) {
     }
 });
 
-const checkboxes = document.querySelectorAll('input[name="gluteeniton"]');
+document.querySelectorAll('.pizza-card').forEach(card => {
+    const sizeChips = card.querySelectorAll('.size-chip');
+    const priceEl   = card.querySelector('.pizza-price');
 
-checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener('change', (event) => {
-        const pizzaCard = event.target.closest('.pizza-card');
-        if (!pizzaCard) return;
+    if (priceEl && !priceEl.dataset.basePrice) {
+        priceEl.dataset.basePrice = parseFloat(priceEl.textContent.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
+    }
 
-        const nameElement = pizzaCard.querySelector('h3');
-        const priceElement = pizzaCard.querySelector('.pizza-footer .pizza-price');
+    const recalc = () => {
+        if (!priceEl) return;
+        const base     = parseFloat(priceEl.dataset.basePrice) || 0;
+        const isIso    = card.querySelector('.size-chip--active')?.dataset.size === 'Iso';
+        const isGluten = card.querySelector('input[name="gluteeniton"]')?.checked;
+        const extras   = Array.from(card.querySelectorAll('.extra-cb:checked'))
+                              .reduce((s, cb) => s + (parseFloat(cb.dataset.price) || 0), 0);
+        priceEl.textContent = (base + (isIso ? 3 : 0) + (isGluten ? 2 : 0) + extras).toFixed(2).replace('.', ',') + ' €';
+    };
 
-        if (!nameElement.dataset.originalName) {
-            nameElement.dataset.originalName = nameElement.innerText;
-        }
-        if (!priceElement.dataset.originalPrice) {
-            priceElement.dataset.originalPrice = priceElement.innerText.replace(/[^0-9.,]/g, "").replace(',', '.');
-        }
+    sizeChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            sizeChips.forEach(c => c.classList.remove('size-chip--active'));
+            chip.classList.add('size-chip--active');
+            recalc();
+        });
+    });
 
-        const originalName = nameElement.dataset.originalName;
-        const originalPrice = parseFloat(priceElement.dataset.originalPrice);
+    const glutenCb = card.querySelector('input[name="gluteeniton"]');
+    if (glutenCb) {
+        glutenCb.addEventListener('change', () => {
+            const gc = glutenCb.closest('.gluten-chip');
+            if (gc) gc.classList.toggle('gluten-chip--checked', glutenCb.checked);
+            recalc();
+        });
+    }
 
-        if (event.target.checked) {
-            nameElement.innerText = "Gluteeniton " + originalName;
-            priceElement.innerText = (originalPrice + 2.0).toFixed(2) + " €";
-        } else {
-            nameElement.innerText = originalName;
-            priceElement.innerText = originalPrice.toFixed(2) + " €";
-        }
+    card.querySelectorAll('.extra-cb').forEach(cb => {
+        cb.addEventListener('change', () => {
+            cb.closest('.extra-chip').classList.toggle('extra-chip--checked', cb.checked);
+            recalc();
+        });
     });
 });
-
 
 const form = document.getElementById('reviewForm');
 const reviewsList = document.getElementById('reviewsList');
