@@ -206,21 +206,25 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         confirmBtn.addEventListener('click', () => {
-
-            // Tarkistus jos on gluteeniton
+            // 1. Laske tuotteiden kokonaismäärä (oletetaan että cart on { "Pizza": 2 })
+            const amounts = Object.values(cart);
+            const totalAmount = amounts.reduce((sum, val) => sum + val, 0);
+        
+            // 2. Tarkista gluteenittomuus
             const glutenFree = Object.keys(cart).some(name => name.includes("Gluteeniton"));
         
             if (selectedMethod === 'pickup') {
                 const now = new Date();
-        
-                let prepTime = 10; // Normaali pizza aika
-                if (glutenFree) prepTime += 3; // +3 min jos gluteeniton
-        
+                
+                // 3. Käytä laskettua määrää (totalAmount)
+                let prepTime = 10 * totalAmount; 
+                
+                if (glutenFree) prepTime += 3;
+                
                 now.setMinutes(now.getMinutes() + prepTime);
                 finaliseOrder(selectedMethod, '', now);
                 return;
             }
-        
             if (selectedMethod === 'delivery') {
                 const addr = document.getElementById('co-address-input').value.trim();
                 if (!addr) { addressErr.textContent = 'Syötä toimitusosoite.'; return; }
@@ -260,6 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+
+
 
         //Tilaus viimeistely valmis
         const finaliseOrder = (method, addrVal, now) => {
@@ -375,7 +381,7 @@ if (fantasiaBtn) {
         const incBtn    = card.querySelector('.increase');
         const orderBtn  = card.querySelector('.order-btn');
         if (!qtyInput || !orderBtn) return;
-    
+
         if (decBtn) decBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) > 1) qtyInput.value--; });
         if (incBtn) incBtn.addEventListener('click', () => { if (parseInt(qtyInput.value) < 99) qtyInput.value++; });
     
