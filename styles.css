@@ -7,6 +7,8 @@
     --muted:    #888;
     --radius:   14px;
     --shadow:   0 20px 50px rgba(0,0,0,0.18);
+    overflow-x: hidden;
+    width: 100%;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -877,9 +879,9 @@ input[type=number] { -moz-appearance: textfield; }
 .cart-login-notice a { color: var(--gold-dim); font-weight: 900; text-decoration: underline; text-underline-offset: 2px; }
 .cart-login-notice a:hover { color: var(--dark); }
 
-.hero-pizza-1 { right: -40px;  top: 48%; transform: rotate(30deg)  translateY(-50%); opacity: 0.18; width: 500px; }
-.hero-pizza-2 { right: 340px;  top: 55%; transform: rotate(-15deg) translateY(-50%); opacity: 0.10; width: 380px; }
-.hero-pizza-3 { right: 620px;  top: 42%; transform: rotate(50deg)  translateY(-50%); opacity: 0.07; width: 300px; }
+.hero-pizza-1 { right: -40px;  top: 48%; transform: rotate(30deg)  translateY(-50%); opacity: 0.45; width: 500px; }
+.hero-pizza-2 { right: 340px;  top: 55%; transform: rotate(-15deg) translateY(-50%); opacity: 0.45; width: 380px; }
+.hero-pizza-3 { right: 820px;  top: 42%; transform: rotate(50deg)  translateY(-50%); opacity: 0.45; width: 300px; }
 
 .drinks-grid {
     display: grid;
@@ -903,15 +905,14 @@ input[type=number] { -moz-appearance: textfield; }
 .drink-card:nth-child(3) { animation-delay: 0.15s; }
 
 .drink-img-wrap {
-    background: linear-gradient(135deg, #c8102e 0%, #9b000e 100%);
+    background: linear-gradient(135deg, #363636 0%, #1a1a1a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1.2rem;
     height: 160px;
 }
-.drink-img-wrap--fanta  { background: linear-gradient(135deg, #ff6f00 0%, #e65c00 100%); }
-.drink-img-wrap--sprite { background: linear-gradient(135deg, #00873e 0%, #005a28 100%); }
+
 
 .drink-img-wrap img {
     height: 130px;
