@@ -51,7 +51,6 @@
             <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Luo tili</button>
         </div>
 
-        <!-- kirjautumislomake -->
         <div class="auth-card" id="form-login">
             <h2>Tervetuloa takaisin</h2>
             <p class="auth-subtitle">Kirjaudu sisään olemassa olevalle tilillesi</p>
@@ -73,7 +72,6 @@
             </div>
         </div>
 
-        <!-- rekisteröintilomake -->
         <div class="auth-card" id="form-register" style="display:none;">
             <h2>Luo uusi tili</h2>
             <p class="auth-subtitle">Rekisteröidy ja tilaa pizzaa helposti</p>
@@ -122,8 +120,6 @@
     <div id="toast" class="toast"></div>
     <script src="script.js"></script>
     <script>
-        // Haetaan paluusivu(se sivu mistä käyttäjä tuli)
-        // Jos ei löydy tallennettua sivua, palataan pääsivulle
         function getReturnPage() {
             const saved = localStorage.getItem('pizzanyt_paluusivu');
             localStorage.removeItem('pizzanyt_paluusivu');
@@ -131,14 +127,11 @@
             if (saved && !saved.includes('login.html')) return saved;
             return 'index.html';
         }
-
-        // Vaihdetaan välilehteä kirjautumisen ja rekisteröitymisen välillä
         function switchTab(tab) {
             document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
             document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
             document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
             document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-            // Tyhjennetään virheviestit välilehden vaihtuessa
             document.getElementById('login-error').textContent = '';
             document.getElementById('reg-error').textContent   = '';
             document.getElementById('reg-success').textContent = '';
